@@ -1,0 +1,4109 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="LUZ STYLE" />
+<meta name="theme-color" content="#F5F1E8" />
+<title>LUZ STYLE — Art Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#F5F1E8;font-family:-apple-system,system-ui,sans-serif;width:100%;overflow-x:hidden;-webkit-tap-highlight-color:transparent;overscroll-behavior-y:contain}
+  *{box-sizing:border-box}
+  body.app-mode{height:100vh;height:100dvh;overflow:hidden;position:fixed;inset:0}
+  #root{width:100%;height:100%}
+  button{font-family:inherit}
+  html{--cr-fs:1}
+  body{font-size:calc(16px * var(--cr-fs))}
+  body.cr-dark{background:#0F0E0D}
+  body.cr-reduce-motion *,body.cr-reduce-motion *::before,body.cr-reduce-motion *::after{animation-duration:.001s!important;transition-duration:.001s!important}
+
+  /* iOS / Android 相容性補強 */
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  input,button,textarea{font-size:16px}
+  input,textarea{-webkit-appearance:none;appearance:none;border-radius:0}
+  body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body class="app-mode">
+<div id="root"></div>
+<script type="text/babel">
+/* eslint-disable */
+// ── data.jsx ──
+;(function(){
+// Shared hairstyle data for the barbering/hair-cutting training system
+// All 4 hairstyles requested: 微分碎蓋、三七側背、萊斯利卷、美式前刺
+
+const HAIRSTYLES = [
+  {
+    id: 'fringe',
+    name: '微分碎蓋',
+    en: 'TEXTURED FRINGE',
+    tagline: '剪出空氣感的東方輪廓',
+    era: '2020s',
+    difficulty: 4,
+    duration: '45 min',
+    tools: ['剪刀', '打薄剪', '平剪', '推剪 0.5'],
+    hero: '#E8DED0',
+    accent: '#8B6F47',
+    lessons: 12,
+    completed: 7,
+    description:
+      '以細碎髮絲堆疊出蓬鬆層次的日韓混血髮型。2020 年後於亞洲男士髮型中大量出現,強調自然落下的瀏海與破碎邊緣,是近五年來最具代表性的東亞男性髮型之一。',
+    evolution: [
+      { year: '2012', label: '韓流起點', body: '韓國偶像團體 EXO、BTS 初登場,厚重瀏海 (Mushroom Cut) 成為主流。' },
+      { year: '2016', label: '薄化瀏海', body: 'GD 與新世代偶像將瀏海剪出縫隙,形成「半透明」質感。' },
+      { year: '2019', label: '碎蓋誕生', body: '台灣設計師將韓系與日系無造型髮風格融合,命名為「碎蓋」。' },
+      { year: '2021', label: '微分時代', body: '剪刀分區刻痕的「微分」技法普及,碎蓋從厚片走向細碎。' },
+      { year: '2024', label: '全球化', body: 'TikTok 播放破億次,成為全球亞裔男性指標髮型。' },
+    ],
+  },
+  {
+    id: 'side',
+    name: '三七側背',
+    en: 'CLASSIC SIDE PART',
+    tagline: '紳士的永恆分線',
+    era: '1920s—',
+    difficulty: 3,
+    duration: '35 min',
+    tools: ['剪刀', '平剪', '推剪 1.0', '梳子', '髮油'],
+    hero: '#2A2620',
+    accent: '#C9A961',
+    lessons: 10,
+    completed: 10,
+    description:
+      '以 7:3 比例分線、側邊削短、頂部保留長度的經典紳士髮型。最早見於 1920 年代歐美上流社會,至今仍是商務與婚禮場合的黃金選擇。',
+    evolution: [
+      { year: '1920', label: 'The Great Gatsby', body: '爵士時代,髮油與分線成為紳士標配。' },
+      { year: '1960', label: 'Mad Men', body: '戰後職場的制服髮型,McQueen、Connery 的經典形象。' },
+      { year: '1990', label: 'Wall Street', body: '華爾街硬派分線,強調削短與高對比。' },
+      { year: '2014', label: 'Undercut 浪潮', body: 'Peaky Blinders 帶回極端對比,側邊推至 0.5 以下。' },
+      { year: '2023', label: '柔化回歸', body: '現代三七捨棄硬線,以推剪漸層取代,更適合亞洲臉型。' },
+    ],
+  },
+  {
+    id: 'leslie',
+    name: '萊斯利卷',
+    en: 'LESLIE WAVE',
+    tagline: '港星黃金年代的遺產',
+    era: '1980s',
+    difficulty: 5,
+    duration: '90 min',
+    tools: ['剪刀', '燙髮捲', '吹風機', '髮蠟'],
+    hero: '#4A2A2A',
+    accent: '#D4A574',
+    lessons: 14,
+    completed: 3,
+    description:
+      '以香港影星張國榮 (Leslie Cheung) 為名的中長度捲髮造型。頂部蓬鬆、側邊自然落下,是 80 年代華人地區最具代表性的男性髮型。',
+    evolution: [
+      { year: '1984', label: 'Monica', body: '張國榮專輯《Leslie》封面,確立捲髮 + 側分的形象。' },
+      { year: '1986', label: '《英雄本色》', body: '港產片黃金期,Leslie Cheung 成為亞洲男性美學標準。' },
+      { year: '1993', label: '《霸王別姬》', body: '捲度更柔和,進入國際影壇。' },
+      { year: '2010', label: '復古回潮', body: '韓國 Big Bang、亞洲男團重新演繹 80s 捲髮。' },
+      { year: '2023', label: '新浪潮', body: 'Y2K 復古風帶回 Leslie Wave,TikTok 教學超過 5 萬支。' },
+    ],
+  },
+  {
+    id: 'pompadour',
+    name: '美式前刺',
+    en: 'AMERICAN POMPADOUR',
+    tagline: '油頭美學的完整詞典',
+    era: '1950s',
+    difficulty: 4,
+    duration: '60 min',
+    tools: ['剪刀', '推剪 0.5', '圓梳', '豬鬃刷', '水性髮油'],
+    hero: '#1A1A1A',
+    accent: '#E85C3F',
+    lessons: 16,
+    completed: 5,
+    description:
+      '頂部向上向前堆疊、側邊俐落推短的經典美式油頭。源自 18 世紀蓬巴杜夫人,1950 年代經貓王 Elvis Presley 推廣為青年反叛符號。',
+    evolution: [
+      { year: '1750', label: 'Madame Pompadour', body: '法國路易十五的情婦發明前額高聳造型,成為名稱由來。' },
+      { year: '1954', label: '貓王登場', body: 'Elvis Presley 首張單曲,Pompadour 成為搖滾符號。' },
+      { year: '1977', label: 'Grease', body: '電影帶動復古油頭成為次文化標誌。' },
+      { year: '2010', label: 'Mad Men 效應', body: 'Don Draper 重新定義商務油頭美學。' },
+      { year: '2020', label: '紋路時代', body: '加入 Texture Crop 等現代技法,油頭進入混種期。' },
+    ],
+  },
+];
+
+const CURRENT_USER = {
+  name: 'Alex Chen',
+  streak: 14,
+  worksCount: 23,
+  badges: 9,
+  joined: '2025.11',
+};
+
+
+const BADGES = [
+  { id: 'first-cut', name: '初剪', desc: '完成第一次剪髮紀錄', earned: true, icon: '✂' },
+  { id: 'streak-7', name: '七日連擊', desc: '連續練習 7 天', earned: true, icon: '⟳' },
+  { id: 'streak-14', name: '雙週堅持', desc: '連續練習 14 天', earned: true, icon: '⟳' },
+  { id: 'fringe-master', name: '碎蓋達人', desc: '完成 10 次碎蓋作品', earned: true, icon: '◐' },
+  { id: 'side-master', name: '三七達人', desc: '完成 10 次三七側背', earned: true, icon: '◑' },
+  { id: 'leslie-master', name: '萊斯利傳人', desc: '完成 10 次萊斯利卷', earned: false, icon: '◒' },
+  { id: 'pomp-master', name: '油頭達人', desc: '完成 10 次前刺', earned: false, icon: '◓' },
+  { id: 'photo-100', name: '百照典藏', desc: '上傳 100 張作品照', earned: false, icon: '▣' },
+  { id: 'peer-10', name: '互評新星', desc: '評價同學作品 10 次', earned: true, icon: '★' },
+  { id: 'mentor-5', name: '師承認可', desc: '獲老師認可 5 次', earned: true, icon: '◆' },
+  { id: 'all-styles', name: '四式全精', desc: '所有髮型皆完成所有髮型的演化路徑', earned: false, icon: '❖' },
+  { id: 'century-day', name: '百日精進', desc: '連續練習 100 天', earned: false, icon: '∞' },
+];
+
+const VIDEO_MARKS = [
+  { time: 12, label: '分區開始', detail: '從耳後 1 公分處劃出水平線' },
+  { time: 87, label: '上層鬆剪', detail: '以 45° 角採刻痕式下刀,保留空氣感' },
+  { time: 164, label: '微分手法', detail: '剪刀尖端垂直插入髮束,每 0.5cm 刻一次' },
+  { time: 232, label: '瀏海處理', detail: '瀏海拉至鼻樑位置,以弧度剪法處理' },
+  { time: 298, label: '收尾吹整', detail: '由下往上吹乾,手指抓出分束' },
+];
+
+const TEXT_STEPS = [
+  { n: 1, title: '觀察髮流', detail: '先將頭髮自然吹乾,觀察天生的旋向與髮流方向。右撇子建議從客人的左側開始。', time: '3 min' },
+  { n: 2, title: '分區八等分', detail: '以十字分線為主,再將頂區、側區、後區各對分成兩塊,共八個作業區。', time: '5 min' },
+  { n: 3, title: '後區基準', detail: '從中央後腦取 1 公分髮束作為基準長度,垂直提起剪 45°。', time: '8 min' },
+  { n: 4, title: '側邊推剪', detail: '以 1 號推剪由耳上至太陽穴處做漸層,務必上推不超過顳骨頂點。', time: '10 min' },
+  { n: 5, title: '上層微分', detail: '頂部每束提起 90°,剪刀尖端垂直切入做刻痕,間隔約 0.5 公分。', time: '12 min' },
+  { n: 6, title: '瀏海弧度', detail: '瀏海自然下落,以弧型剪法由內而外剪出弧度,中間最短。', time: '5 min' },
+  { n: 7, title: '收尾打薄', detail: '用打薄剪從髮尾 1/3 處開始,輕壓 2-3 次即可。', time: '2 min' },
+];
+
+window.HAIR_DATA = { HAIRSTYLES, CURRENT_USER, BADGES, VIDEO_MARKS, TEXT_STEPS };
+
+})();
+
+// ── variant-a.jsx ──
+;(function(){
+// Direction A — Monochrome Vogue
+// Inky black × ivory × warm tan. Didone serif + mono labels.
+// Feels like a print fashion title: generous whitespace, oversized numerals.
+
+const A = {
+  ink: '#0F0E0D',
+  paper: '#F5F1E8',
+  tan: '#B8946A',
+  rule: '#0F0E0D',
+  muted: '#5A544B',
+  wash: '#EBE4D4',
+  accent: '#C9452F',
+  serif: '"Playfair Display", "Didot", "Bodoni MT", Georgia, serif',
+  sans: '"Inter Tight", "Helvetica Neue", system-ui, sans-serif',
+  mono: '"JetBrains Mono", "SF Mono", ui-monospace, monospace',
+};
+
+const { HAIRSTYLES, CURRENT_USER, BADGES, VIDEO_MARKS, TEXT_STEPS } = window.HAIR_DATA;
+
+// ─── Reusable pieces
+function AIssue({ n, total }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: A.muted, textTransform: 'uppercase' }}>
+      <span>Issue №{String(n).padStart(2, '0')}</span>
+      <span style={{ flex: 1, height: 1, background: A.rule, opacity: 0.2 }} />
+      <span>{total}</span>
+    </div>
+  );
+}
+
+function ADivider({ label }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', margin: '18px 0' }}>
+      <div style={{ flex: 1, height: 1, background: A.ink }} />
+      {label && <span style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2.5, textTransform: 'uppercase' }}>{label}</span>}
+      <div style={{ flex: 1, height: 1, background: A.ink }} />
+    </div>
+  );
+}
+
+// ─── Screen 01 · Home / Course index
+function AHome({ alias }) {
+  const aliasText = (alias && String(alias).trim()) || '';
+  return (
+    <div style={{ background: A.paper, minHeight: '100%', color: A.ink, paddingBottom: 40 }}>
+      {/* masthead */}
+      <div style={{ padding: '56px 20px 0' }}>
+        <AIssue n={42} total="APR · 2026" />
+        <div style={{ fontFamily: A.serif, fontSize: 60, lineHeight: 0.88, fontWeight: 400, letterSpacing: -2, marginTop: 18, fontStyle: 'italic' }}>
+          LUZ<br/>STYLE<br/>
+          <span style={{ fontStyle: 'normal', fontSize: 32, letterSpacing: 1, display: 'inline-block', marginTop: 10 }}>
+            {aliasText && (
+              <span style={{ fontFamily: A.serif, fontStyle: 'italic', fontSize: 28, letterSpacing: 0, marginRight: 10, color: A.accent }}>
+                {aliasText}'s
+              </span>
+            )}
+            Art Gallery.
+          </span>
+        </div>
+        <div style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2, marginTop: 14, color: A.muted, textTransform: 'uppercase' }}>
+          A Journal of Scissors, Hands and Form
+        </div>
+      </div>
+
+      <ADivider label="In this issue" />
+
+      {/* hero article */}
+      <div style={{ padding: '0 20px' }}>
+        <div style={{ position: 'relative', height: 260, background: `linear-gradient(135deg, #2A2620 0%, #0F0E0D 100%)`, overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 40%, rgba(185,148,106,0.35) 0%, transparent 60%)' }} />
+          <div style={{ position: 'absolute', top: 14, left: 14, fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.paper }}>FEATURED · 01</div>
+          <div style={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
+            <div style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: A.tan, textTransform: 'uppercase' }}>TEXTURED FRINGE</div>
+            <div style={{ fontFamily: A.serif, fontSize: 32, lineHeight: 0.95, color: A.paper, fontStyle: 'italic', marginTop: 6 }}>微分碎蓋的<br/>十二年演化</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted, textTransform: 'uppercase' }}>
+          <span>12 LESSONS · 45 MIN</span><span>→ START</span>
+        </div>
+      </div>
+
+      <ADivider label="The Four Classics" />
+
+      {/* grid of styles */}
+      <div style={{ padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        {HAIRSTYLES.slice(1).map((h, i) => (
+          <div key={h.id}>
+            <div style={{ height: 150, background: h.hero, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at 50% 30%, ${h.accent}33 0%, transparent 70%)` }} />
+              <div style={{ position: 'absolute', top: 8, left: 8, fontFamily: A.mono, fontSize: 8, letterSpacing: 1.5, color: h.accent }}>№0{i + 2}</div>
+              <div style={{ position: 'absolute', bottom: 8, right: 8, fontFamily: A.serif, fontSize: 42, lineHeight: 0.8, color: h.accent, fontStyle: 'italic', opacity: 0.9 }}>{['B','C','D'][i]}</div>
+            </div>
+            <div style={{ fontFamily: A.serif, fontSize: 17, marginTop: 8, letterSpacing: -0.2 }}>{h.name}</div>
+            <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted, textTransform: 'uppercase' }}>{h.en}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Screen 02 · Style profile + evolution timeline (interactive)
+// Accepts a `hair` prop. If absent, falls back to window.__activeHair (set by
+// favorites/search) or HAIRSTYLES[0]. Re-renders when activeHair changes
+// because the parent App swaps `key` on tab change.
+function AProfile({ hair }) {
+  const [active, setActive] = React.useState(0);
+  const h = hair || window.__activeHair || HAIRSTYLES[0];
+  const num = String((HAIRSTYLES.findIndex(x => x.id === h.id) + 1) || 1).padStart(2, '0');
+  const eraStart = h.evolution?.[0]?.year || '';
+  const eraEnd = h.evolution?.[h.evolution.length - 1]?.year || '';
+  return (
+    <div style={{ background: A.paper, minHeight: '100%', color: A.ink, paddingBottom: 40 }}>
+      {/* hero */}
+      <div style={{ height: 380, background: '#1A1714', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 50% 30%, rgba(232,222,208,0.18) 0%, transparent 70%)` }} />
+        <div style={{ position: 'absolute', top: 56, left: 20, right: 20, fontFamily: A.mono, fontSize: 9, letterSpacing: 2.5, color: A.tan }}>
+          № {num}  ·  {h.en}  ·  {h.era}
+        </div>
+        {/* giant numeral */}
+        <div style={{ position: 'absolute', top: 68, right: 14, fontFamily: A.serif, fontSize: 280, lineHeight: 0.75, color: A.tan, opacity: 0.12, fontStyle: 'italic' }}>{num}</div>
+        <div style={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
+          <div style={{ fontFamily: A.serif, fontSize: 54, lineHeight: 0.9, color: A.paper, fontStyle: 'italic' }}>{h.name}</div>
+          <div style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: A.tan, marginTop: 10, textTransform: 'uppercase' }}>{h.tagline}</div>
+        </div>
+      </div>
+
+      {/* pull-quote intro */}
+      <div style={{ padding: '30px 20px 0' }}>
+        <div style={{ fontFamily: A.serif, fontSize: 19, lineHeight: 1.4, letterSpacing: -0.1 }}>
+          {h.description}
+        </div>
+        <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.muted, marginTop: 18, display: 'flex', gap: 20, textTransform: 'uppercase' }}>
+          <span>LV. {'★'.repeat(h.difficulty || 3).padEnd(5,'☆')}</span>
+          <span>{h.duration || '— MIN'}</span>
+          <span>{h.evolution?.length || 0} EPOCHS</span>
+        </div>
+      </div>
+
+      <ADivider label={`Evolution · ${eraStart}—${eraEnd}`} />
+
+      {/* INTERACTIVE TIMELINE */}
+      <div style={{ padding: '0 20px' }}>
+        <div style={{ position: 'relative', paddingBottom: 4 }}>
+          {/* baseline */}
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 38, height: 1, background: A.ink }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
+            {h.evolution.map((e, i) => (
+              <button key={i} onClick={() => setActive(i)}
+                style={{ border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', textAlign: 'center', flex: 1, position: 'relative' }}>
+                <div style={{ fontFamily: A.serif, fontSize: 14, fontStyle: 'italic', color: active === i ? A.accent : A.ink, transition: 'color .2s' }}>{e.year}</div>
+                <div style={{ margin: '8px auto 0', width: active === i ? 12 : 6, height: active === i ? 12 : 6, borderRadius: '50%',
+                  background: active === i ? A.accent : A.ink, transition: 'all .2s' }} />
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* selected entry */}
+        <div style={{ marginTop: 24, paddingLeft: 2 }}>
+          <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.accent, textTransform: 'uppercase' }}>
+            {h.evolution[active].year} · {h.evolution[active].label}
+          </div>
+          <div style={{ fontFamily: A.serif, fontSize: 17, lineHeight: 1.4, marginTop: 8, minHeight: 92 }}>
+            {h.evolution[active].body}
+          </div>
+        </div>
+      </div>
+
+      <ADivider label="Skill Tree · 演化路徑" />
+
+      <ASkillTree hair={h} />
+    </div>
+  );
+}
+
+// ─── Skill Tree — user-built learning path
+// Tier-gated:
+//  · Root (髮型本體) — 起點
+//  · 任何節點都可以新增子節點、上傳圖片、改名
+//  · 從根節點往上演化
+//  · 不再有等級限制
+// Persisted per hairstyle id.
+function ASkillTree({ hair }) {
+  const storeKey = `cuttingroom_skilltree_${hair.id}`;
+
+  const seed = React.useMemo(() => ({
+    nodes: [{ id: 'root', parent: null, label: hair.name }],
+  }), [hair.id, hair.name]);
+
+  // 強制把載入的資料中 root 節點 label 校正成當前髮型名稱
+  // 處理舊版資料汙染（過去版本曾有所有髮型共用同一份 tree 的 bug）
+  const sanitize = (data, hairName) => {
+    if (!data || !Array.isArray(data.nodes) || data.nodes.length === 0) {
+      return { nodes: [{ id: 'root', parent: null, label: hairName }] };
+    }
+    const nodes = data.nodes.map(n =>
+      n.id === 'root' ? { ...n, label: hairName, parent: null } : n
+    );
+    // 確保有 root，沒有就補
+    if (!nodes.some(n => n.id === 'root')) {
+      nodes.unshift({ id: 'root', parent: null, label: hairName });
+    }
+    return { ...data, nodes };
+  };
+
+  const [tree, setTree] = React.useState(() => {
+    try {
+      const raw = localStorage.getItem(storeKey);
+      if (raw) return sanitize(JSON.parse(raw), hair.name);
+    } catch {}
+    return seed;
+  });
+
+  React.useEffect(() => {
+    try { localStorage.setItem(storeKey, JSON.stringify(tree)); } catch {}
+  }, [tree, storeKey]);
+
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storeKey);
+      setTree(raw ? sanitize(JSON.parse(raw), hair.name) : seed);
+    } catch {
+      setTree(seed);
+    }
+  }, [storeKey, hair.name]); // eslint-disable-line
+
+  const [editingId, setEditingId] = React.useState(null);
+
+  // helpers
+  const ensureSystemNode = (id, parent, label) => {
+    setTree(t => {
+      if (t.nodes.some(n => n.id === id)) return t;
+      return { ...t, nodes: [...t.nodes, { id, parent, label, system: true }] };
+    });
+  };
+  const updateNode = (id, patch) => setTree(t => ({ ...t, nodes: t.nodes.map(n => n.id === id ? { ...n, ...patch } : n) }));
+  const addChild = (parentId) => {
+    const id = 'n_' + Math.random().toString(36).slice(2, 8);
+    setTree(t => ({ ...t, nodes: [...t.nodes, { id, parent: parentId, label: '新節點', image: null }] }));
+    setEditingId(id);
+  };
+  const removeNode = (id) => {
+    if (id === 'root') return;
+    const parents = {}; tree.nodes.forEach(n => parents[n.id] = n.parent);
+    const isDescendant = (nid) => { let c = nid; while (c) { if (c === id) return true; c = parents[c]; } return false; };
+    setTree(t => ({ ...t, nodes: t.nodes.filter(n => !isDescendant(n.id)) }));
+    setEditingId(null);
+  };
+  const onPickNodeImage = (id, file) => {
+    if (!file) return;
+    const r = new FileReader(); r.onload = () => updateNode(id, { image: r.result }); r.readAsDataURL(file);
+  };
+  // novice/expert 槽位邏輯已移除
+
+  // root click → tier picker
+  const onClickNode = (n) => {
+    // root 與任何節點：點擊 = 開啟編輯/新增子節點介面
+    setEditingId(editingId === n.id ? null : n.id);
+  };
+
+
+  // ─ layout: row = depth, x positions centered under parent.
+  const layout = React.useMemo(() => {
+    const byParent = {};
+    tree.nodes.forEach(n => { const k = n.parent || '__root__'; (byParent[k] = byParent[k] || []).push(n); });
+    const positions = {};
+    const walk = (id, depth, leftX) => {
+      const kids = byParent[id] || [];
+      if (kids.length === 0) { positions[id] = { row: depth, x: leftX, width: 1 }; return 1; }
+      let acc = 0;
+      kids.forEach(k => { acc += walk(k.id, depth + 1, leftX + acc); });
+      positions[id] = { row: depth, x: leftX + (acc - 1) / 2, width: acc };
+      return acc;
+    };
+    const totalCols = walk('root', 0, 0) || 1;
+    const maxRow = Math.max(0, ...tree.nodes.map(n => positions[n.id]?.row || 0));
+    return { positions, totalCols, maxRow };
+  }, [tree]);
+
+  // visual constants
+  const ROW_H = 110;
+  const NODE_W = 132;
+  const NODE_H = 56;
+  const SIDE_PAD = 24;
+  const BOARD_H = (layout.maxRow + 1) * ROW_H + 40;
+  const COL_MIN_W = NODE_W + 28;
+  const CONTENT_W_PX = layout.totalCols * COL_MIN_W;
+  // Container is fluid; canvas inside expands but minimum equals container width so root sits centered when there's only one column.
+  const [boardW, setBoardW] = React.useState(360);
+  const boardRef = React.useRef(null);
+  React.useLayoutEffect(() => {
+    if (!boardRef.current) return;
+    const ro = new ResizeObserver(([e]) => setBoardW(Math.max(280, e.contentRect.width)));
+    ro.observe(boardRef.current);
+    return () => ro.disconnect();
+  }, []);
+  const BOARD_W_PX = Math.max(boardW, CONTENT_W_PX + SIDE_PAD * 2);
+
+  const xFor = (id) => {
+    const p = layout.positions[id]; if (!p) return BOARD_W_PX / 2;
+    if (layout.totalCols <= 1) return BOARD_W_PX / 2;
+    // map x ∈ [0, totalCols-1] → centered range within board
+    const span = (layout.totalCols - 1) * COL_MIN_W;
+    const startX = (BOARD_W_PX - span) / 2;
+    return startX + p.x * COL_MIN_W;
+  };
+  const yFor = (id) => {
+    const p = layout.positions[id]; if (!p) return BOARD_H - ROW_H / 2;
+    return BOARD_H - (p.row * ROW_H + ROW_H / 2);
+  };
+
+  return (
+    <div style={{ padding: '0 20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontFamily: A.mono, fontSize: 9, letterSpacing: 1.6, color: A.muted, marginBottom: 10, textTransform: 'uppercase' }}>
+        <span>↘ 點節點開始建構</span>
+        <span>{tree.nodes.length} 個節點</span>
+      </div>
+
+      {/* tree board */}
+      <div ref={boardRef} style={{ position: 'relative', overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: `1px solid ${A.ink}`, background: A.wash }}>
+        <div style={{ position: 'relative', width: BOARD_W_PX, height: BOARD_H }}>
+          {/* grid paper */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `linear-gradient(${A.ink}11 1px, transparent 1px), linear-gradient(90deg, ${A.ink}11 1px, transparent 1px)`,
+            backgroundSize: '16px 16px', opacity: 0.6,
+          }} />
+
+          {/* edges */}
+          <svg width={BOARD_W_PX} height={BOARD_H} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            {tree.nodes.filter(n => n.parent).map(n => {
+              const sx = xFor(n.parent), sy = yFor(n.parent) - NODE_H / 2;
+              const ex = xFor(n.id),     ey = yFor(n.id) + NODE_H / 2;
+              const my = (sy + ey) / 2;
+              return (
+                <path key={n.id}
+                  d={`M ${sx} ${sy} C ${sx} ${my}, ${ex} ${my}, ${ex} ${ey}`}
+                  fill="none" stroke={A.ink} strokeOpacity={0.5} strokeWidth={1} />
+              );
+            })}
+          </svg>
+
+          {/* nodes (text-only) */}
+          {tree.nodes.map(n => {
+            const cx = xFor(n.id), cy = yFor(n.id);
+            const isRoot = n.id === 'root';
+            const isSystem = false; // 所有節點皆可編輯
+            const dark = isRoot;
+            return (
+              <button key={n.id}
+                onClick={() => onClickNode(n)}
+                style={{
+                  position: 'absolute',
+                  left: cx - NODE_W / 2, top: cy - NODE_H / 2,
+                  width: NODE_W, height: NODE_H,
+                  background: dark ? A.ink : A.paper,
+                  color: dark ? A.paper : A.ink,
+                  border: `1px solid ${dark ? A.ink : (isSystem ? A.ink : A.muted)}`,
+                  boxShadow: dark ? `3px 3px 0 ${A.ink}` : 'none',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', textAlign: 'center', padding: '6px 10px',
+                  fontFamily: 'inherit',
+                }}>
+                <div style={{ fontFamily: A.mono, fontSize: 8, letterSpacing: 1.6, color: dark ? A.tan : A.muted, textTransform: 'uppercase' }}>
+                  {isRoot ? '◆ ROOT' : 'NODE'}
+                </div>
+                <div style={{ fontFamily: A.serif, fontSize: 14, fontStyle: 'italic', lineHeight: 1.1, marginTop: 2,
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                  {n.label || '—'}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* tier picker removed */}
+
+      {/* lesson modal removed */}
+
+      {/* ── 節點編輯器 ── */}
+      {editingId && (() => {
+        const n = tree.nodes.find(x => x.id === editingId);
+        if (!n) return null;
+        return (
+          <div style={{ marginTop: 14, border: `1px solid ${A.ink}`, background: A.paper, padding: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.muted, textTransform: 'uppercase' }}>NODE</div>
+              <button onClick={() => setEditingId(null)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: A.mono, fontSize: 11, color: A.muted }}>✕</button>
+            </div>
+            <input value={n.label} onChange={e => updateNode(n.id, { label: e.target.value })}
+              placeholder="節點名稱"
+              style={{ width: '100%', padding: '8px 10px', marginBottom: 10, fontFamily: A.serif, fontSize: 18, fontStyle: 'italic', background: A.wash, border: `1px solid ${A.ink}`, color: A.ink, outline: 'none' }} />
+            <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.6, color: A.muted, marginBottom: 6, textTransform: 'uppercase' }}>圖片 · IMAGE</div>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <div style={{ width: 80, height: 80, border: `1px solid ${A.muted}`, background: n.image ? '#000' : A.wash, overflow: 'hidden', flexShrink: 0 }}>
+                {n.image && <img src={n.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+              </div>
+              <div style={{ flex: 1 }}>
+                <input type="file" accept="image/*" onChange={e => onPickNodeImage(n.id, e.target.files && e.target.files[0])}
+                  style={{ fontFamily: A.mono, fontSize: 11, color: A.ink }} />
+                {n.image && (
+                  <button onClick={() => updateNode(n.id, { image: null })}
+                    style={{ marginTop: 8, padding: '4px 10px', background: 'transparent', border: `1px solid ${A.muted}`, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, cursor: 'pointer', color: A.muted, textTransform: 'uppercase' }}>移除圖片</button>
+                )}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+              <button onClick={() => addChild(n.id)}
+                style={{ flex: 1, padding: '10px 12px', background: A.ink, color: A.paper, border: 'none', cursor: 'pointer', fontFamily: A.mono, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' }}>+ 新增子節點</button>
+              <button onClick={() => removeNode(n.id)}
+                style={{ padding: '10px 12px', background: 'transparent', color: A.accent, border: `1px solid ${A.accent}`, cursor: 'pointer', fontFamily: A.mono, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' }}>刪除</button>
+            </div>
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
+
+// ─── Screen 03 · Text steps
+function ASteps() {
+  return (
+    <div style={{ background: A.paper, minHeight: '100%', color: A.ink, paddingBottom: 40 }}>
+      <div style={{ padding: '56px 20px 0' }}>
+        <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.muted, textTransform: 'uppercase' }}>CHAPTER I · THE METHOD</div>
+        <div style={{ fontFamily: A.serif, fontSize: 44, lineHeight: 0.92, fontStyle: 'italic', marginTop: 14, letterSpacing: -0.5 }}>
+          碎蓋<br/>七步法
+        </div>
+        <div style={{ fontFamily: A.serif, fontSize: 14, lineHeight: 1.5, color: A.muted, marginTop: 14 }}>
+          以下為標準作業流程。每步驟平均 5—12 分鐘,全程約 45 分。
+        </div>
+      </div>
+
+      <ADivider label="Steps" />
+
+      <div style={{ padding: '0 20px' }}>
+        {TEXT_STEPS.map((s, i) => (
+          <div key={s.n} style={{ display: 'flex', gap: 16, paddingBottom: 22, marginBottom: 22, borderBottom: i < TEXT_STEPS.length - 1 ? `1px solid ${A.wash}` : 'none' }}>
+            <div style={{ fontFamily: A.serif, fontSize: 52, lineHeight: 0.8, fontStyle: 'italic', color: A.accent, width: 60, flexShrink: 0 }}>
+              {String(s.n).padStart(2, '0')}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <div style={{ fontFamily: A.serif, fontSize: 19, fontStyle: 'italic' }}>{s.title}</div>
+                <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted }}>{s.time.toUpperCase()}</div>
+              </div>
+              <div style={{ fontFamily: A.serif, fontSize: 14, lineHeight: 1.55, color: A.ink, marginTop: 6 }}>
+                {s.detail}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Screen 04 · Video player with step annotations
+function AVideo() {
+  const [time, setTime] = React.useState(164);
+  const total = 345;
+  const activeMark = VIDEO_MARKS.slice().reverse().find(m => m.time <= time) || VIDEO_MARKS[0];
+  const fmt = t => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+  return (
+    <div style={{ background: '#0F0E0D', minHeight: '100%', color: A.paper, paddingBottom: 40 }}>
+      {/* video frame */}
+      <div style={{ height: 420, background: 'linear-gradient(180deg, #2A2620 0%, #0F0E0D 100%)', position: 'relative', marginTop: 48 }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 45% 45%, rgba(232,222,208,0.2) 0%, transparent 55%)' }} />
+        {/* play icon */}
+        <div style={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%, -50%)',
+          width: 68, height: 68, borderRadius: '50%', border: `1.5px solid ${A.paper}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 0, height: 0, borderLeft: `12px solid ${A.paper}`, borderTop: '8px solid transparent', borderBottom: '8px solid transparent', marginLeft: 4 }} />
+        </div>
+        {/* annotation callout */}
+        <div style={{ position: 'absolute', bottom: 24, left: 20, right: 20, background: A.paper, color: A.ink, padding: '12px 14px' }}>
+          <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.accent, textTransform: 'uppercase' }}>
+            MARK · {fmt(activeMark.time)} · {activeMark.label}
+          </div>
+          <div style={{ fontFamily: A.serif, fontSize: 14, lineHeight: 1.45, marginTop: 6 }}>{activeMark.detail}</div>
+        </div>
+        <div style={{ position: 'absolute', top: 16, left: 16, fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.tan }}>LESSON 05 · 微分手法</div>
+      </div>
+
+      {/* scrubber with marks */}
+      <div style={{ padding: '20px 20px 0' }}>
+        <div style={{ position: 'relative', height: 26, marginBottom: 8 }}>
+          <div style={{ position: 'absolute', top: 12, left: 0, right: 0, height: 2, background: 'rgba(245,241,232,0.2)' }} />
+          <div style={{ position: 'absolute', top: 12, left: 0, width: `${(time/total)*100}%`, height: 2, background: A.paper }} />
+          {VIDEO_MARKS.map((m, i) => (
+            <button key={i} onClick={() => setTime(m.time)}
+              style={{ position: 'absolute', top: 7, left: `${(m.time/total)*100}%`, transform: 'translateX(-50%)',
+                width: 12, height: 12, borderRadius: '50%', border: `2px solid ${A.paper}`,
+                background: m.time <= time ? A.accent : '#0F0E0D', cursor: 'pointer', padding: 0 }} />
+          ))}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: A.mono, fontSize: 10, letterSpacing: 1 }}>
+          <span>{fmt(time)}</span><span style={{ opacity: 0.5 }}>{fmt(total)}</span>
+        </div>
+      </div>
+
+      {/* marks list */}
+      <div style={{ marginTop: 30 }}>
+        <div style={{ padding: '0 20px', fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.tan, textTransform: 'uppercase', marginBottom: 14 }}>
+          Chapter Marks · 5
+        </div>
+        {VIDEO_MARKS.map((m, i) => (
+          <button key={i} onClick={() => setTime(m.time)}
+            style={{ display: 'block', width: '100%', background: 'transparent', border: 'none', cursor: 'pointer',
+              padding: '14px 20px', borderTop: '1px solid rgba(245,241,232,0.1)',
+              textAlign: 'left', color: A.paper, fontFamily: 'inherit' }}>
+            <div style={{ display: 'flex', gap: 14, alignItems: 'baseline' }}>
+              <span style={{ fontFamily: A.mono, fontSize: 11, color: m.time <= time ? A.accent : A.tan, width: 44 }}>{fmt(m.time)}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: A.serif, fontSize: 16, fontStyle: 'italic' }}>{m.label}</div>
+                <div style={{ fontFamily: A.serif, fontSize: 12, color: 'rgba(245,241,232,0.55)', marginTop: 2 }}>{m.detail}</div>
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Screen 05 · Work upload + before/after
+function AWorks() {
+  return (
+    <div style={{ background: A.paper, minHeight: '100%', color: A.ink, paddingBottom: 40 }}>
+      <div style={{ padding: '56px 20px 0' }}>
+        <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.muted, textTransform: 'uppercase' }}>FOLIO · YOUR WORK</div>
+        <div style={{ fontFamily: A.serif, fontSize: 44, lineHeight: 0.9, fontStyle: 'italic', marginTop: 14 }}>作品集<br/>№ 23</div>
+      </div>
+
+      <ADivider label="Before / After · Today" />
+
+      {/* before/after */}
+      <div style={{ padding: '0 20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div>
+            <div style={{ height: 180, background: 'linear-gradient(180deg, #8B7355 0%, #4A3A2A 100%)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 8, left: 8, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.paper }}>BEFORE</div>
+            </div>
+            <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, marginTop: 6, color: A.muted }}>04 · 21 · 09:12</div>
+          </div>
+          <div>
+            <div style={{ height: 180, background: 'linear-gradient(180deg, #D4B896 0%, #8B6F47 100%)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 8, left: 8, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.paper }}>AFTER</div>
+            </div>
+            <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, marginTop: 6, color: A.muted }}>04 · 21 · 09:57</div>
+          </div>
+        </div>
+      </div>
+
+      {/* caption */}
+      <div style={{ padding: '18px 20px 0' }}>
+        <div style={{ fontFamily: A.serif, fontSize: 20, fontStyle: 'italic', lineHeight: 1.3 }}>
+          「第 8 次練習微分碎蓋,瀏海弧度比上次柔和。」
+        </div>
+        <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.muted, marginTop: 10, textTransform: 'uppercase' }}>
+          TEXTURED FRINGE · 42 MIN · SELF-RATED 8/10
+        </div>
+      </div>
+
+      <ADivider label="Archive" />
+
+      {/* older works grid */}
+      <div style={{ padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
+        {Array.from({ length: 12 }).map((_, i) => {
+          const h = HAIRSTYLES[i % 4];
+          return (
+            <div key={i} style={{ aspectRatio: '3/4', background: h.hero, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, transparent 60%, ${h.hero}), radial-gradient(circle at 50% 40%, ${h.accent}44 0%, transparent 70%)` }} />
+              <div style={{ position: 'absolute', bottom: 4, left: 4, right: 4, fontFamily: A.mono, fontSize: 7, letterSpacing: 1, color: h.accent }}>№{String(23 - i).padStart(2,'0')}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* upload button */}
+      <div style={{ padding: '28px 20px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 0', borderTop: `1px solid ${A.ink}`, borderBottom: `1px solid ${A.ink}` }}>
+          <span style={{ fontFamily: A.serif, fontSize: 20, fontStyle: 'italic' }}>Upload new work</span>
+          <span style={{ fontFamily: A.mono, fontSize: 20 }}>+</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Screen 06 · Rewards / Level / Badges
+function ARewards() {
+  return (
+    <div style={{ background: A.paper, minHeight: '100%', color: A.ink, paddingBottom: 40 }}>
+      <div style={{ padding: '56px 20px 0' }}>
+        <AIssue n={42} total="MASTHEAD" />
+        <div style={{ fontFamily: A.serif, fontSize: 54, lineHeight: 0.88, fontStyle: 'italic', marginTop: 14, letterSpacing: -1 }}>
+          Alex<br/>Chen
+        </div>
+        <div style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: A.muted, marginTop: 12, textTransform: 'uppercase' }}>
+          {CURRENT_USER.streak}-DAY STREAK · JOINED {CURRENT_USER.joined}
+        </div>
+      </div>
+
+      <ADivider label="Stats" />
+
+      <div style={{ padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 0, borderTop: `1px solid ${A.ink}`, borderBottom: `1px solid ${A.ink}` }}>
+        <div style={{ padding: '18px 12px', borderRight: `1px solid ${A.wash}`, textAlign: 'center' }}>
+          <div style={{ fontFamily: A.serif, fontSize: 32, fontStyle: 'italic', lineHeight: 1 }}>{CURRENT_USER.worksCount}</div>
+          <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted, marginTop: 6, textTransform: 'uppercase' }}>Works</div>
+        </div>
+        <div style={{ padding: '18px 12px', borderRight: `1px solid ${A.wash}`, textAlign: 'center' }}>
+          <div style={{ fontFamily: A.serif, fontSize: 32, fontStyle: 'italic', lineHeight: 1 }}>{CURRENT_USER.streak}</div>
+          <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted, marginTop: 6, textTransform: 'uppercase' }}>Streak</div>
+        </div>
+        <div style={{ padding: '18px 12px', textAlign: 'center' }}>
+          <div style={{ fontFamily: A.serif, fontSize: 32, fontStyle: 'italic', lineHeight: 1 }}>{CURRENT_USER.badges}</div>
+          <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted, marginTop: 6, textTransform: 'uppercase' }}>Badges</div>
+        </div>
+      </div>
+
+      <ADivider label="Badges · 7 of 12" />
+
+      {/* badges grid */}
+      <div style={{ padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+        {BADGES.map(b => (
+          <div key={b.id} style={{ textAlign: 'center', opacity: b.earned ? 1 : 0.35 }}>
+            <div style={{ aspectRatio: '1/1', border: `1px solid ${A.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 28, color: b.earned ? A.accent : A.ink, background: b.earned ? A.paper : 'transparent' }}>
+              {b.icon}
+            </div>
+            <div style={{ fontFamily: A.serif, fontSize: 11, fontStyle: 'italic', marginTop: 6 }}>{b.name}</div>
+            <div style={{ fontFamily: A.mono, fontSize: 7, letterSpacing: 1, color: A.muted, textTransform: 'uppercase', marginTop: 2, lineHeight: 1.3 }}>
+              {b.desc}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Favorites store (window-scoped + localStorage)
+// Anything added gets a `_fav` key whose value is the full hair object,
+// so AProfile can reconstruct the page from any seeded or AI-generated cut.
+const FAVS_KEY = 'cuttingroom_favs_v1';
+function loadFavs() {
+  try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch { return []; }
+}
+function saveFavs(arr) {
+  try { localStorage.setItem(FAVS_KEY, JSON.stringify(arr)); } catch {}
+  window.dispatchEvent(new CustomEvent('cuttingroom:favs-changed'));
+}
+function isFav(name) {
+  return loadFavs().some(h => h.name === name);
+}
+function addFav(hair) {
+  const cur = loadFavs();
+  if (cur.some(h => h.name === hair.name)) return false;
+  saveFavs([{ ...hair, savedAt: Date.now() }, ...cur].slice(0, 50));
+  return true;
+}
+function removeFav(name) {
+  saveFavs(loadFavs().filter(h => h.name !== name));
+}
+window.HairFavs = { loadFavs, addFav, removeFav, isFav };
+
+// ─── Screen 02C · Favorites — names list → opens AProfile, with rank ladder below
+function AFavorites({ onOpen, alias }) {
+  const [favs, setFavs] = React.useState(loadFavs);
+  React.useEffect(() => {
+    const refresh = () => setFavs(loadFavs());
+    window.addEventListener('cuttingroom:favs-changed', refresh);
+    return () => window.removeEventListener('cuttingroom:favs-changed', refresh);
+  }, []);
+  const aliasText = (alias && String(alias).trim()) || '';
+  const ownerLabel = aliasText ? `${aliasText}的` : '我的';
+
+  return (
+    <div style={{ background: A.paper, minHeight: '100%', color: A.ink, paddingBottom: 40 }}>
+      {/* masthead */}
+      <div style={{ padding: '52px 20px 0' }}>
+        <div style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: A.muted, textTransform: 'uppercase' }}>
+          The Vault · SKILLS
+        </div>
+        <div style={{ fontFamily: A.serif, fontSize: 56, lineHeight: 0.88, fontStyle: 'italic', marginTop: 14, letterSpacing: -1 }}>
+          {ownerLabel}<br/>SKILLS。
+        </div>
+        <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.muted, marginTop: 14, textTransform: 'uppercase' }}>
+          {favs.length} SKILLS · CURATED BY YOU
+        </div>
+      </div>
+
+      <ADivider label={favs.length ? 'Index' : 'Empty Vault'} />
+
+      {/* list of names */}
+      <div style={{ padding: '0 20px' }}>
+        {favs.length === 0 && (
+          <div style={{ padding: '20px 0 8px', fontFamily: A.serif, fontSize: 16, lineHeight: 1.5, color: A.muted, fontStyle: 'italic' }}>
+            尚未加入任何 SKILLS。<br/>
+            <span style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 1.5, fontStyle: 'normal', color: A.ink }}>
+              ↗ 前往 SEARCH 搜尋並按「+ 加入 SKILLS」
+            </span>
+          </div>
+        )}
+        {favs.map((h, i) => (
+          <button key={h.name} onClick={() => onOpen && onOpen(h)}
+            style={{ display: 'flex', alignItems: 'baseline', gap: 16, padding: '20px 0',
+              width: '100%', textAlign: 'left',
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              borderTop: i === 0 ? `1px solid ${A.ink}` : 'none',
+              borderBottom: `1px solid ${A.wash}`,
+              fontFamily: 'inherit', color: A.ink }}>
+            <div style={{ fontFamily: A.serif, fontSize: 30, fontStyle: 'italic', lineHeight: 0.9, color: A.accent, width: 56, flexShrink: 0 }}>
+              {String(i + 1).padStart(2, '0')}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: A.serif, fontSize: 24, lineHeight: 1, fontStyle: 'italic' }}>{h.name}</div>
+              <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.8, color: A.muted, marginTop: 6, textTransform: 'uppercase',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {h.en} · {h.era}
+              </div>
+            </div>
+            <div style={{ fontFamily: A.mono, fontSize: 16, color: A.ink, paddingLeft: 6 }}>→</div>
+          </button>
+        ))}
+      </div>
+
+      {/* embedded rank rewards — removed per request */}
+    </div>
+  );
+}
+
+window.VariantA = { AHome, AProfile, AFavorites, ASteps, AVideo, AWorks, ARewards, A };
+
+})();
+
+// ── variant-a-search.jsx ──
+;(function(){
+// Search screen for Direction A
+// Lets users type any hairstyle name and fetches its evolution + intro via Claude.
+
+const { HAIRSTYLES: SEED } = window.HAIR_DATA;
+const A2 = window.VariantA.A;
+
+// suggestion chips (mix of seeded + extras)
+// classify hairstyle by name keywords → silhouette variant
+function classifyStyle(name, en = '') {
+  const s = (name + ' ' + en).toLowerCase();
+  if (/buzz|平頭|寸頭|光頭/.test(s)) return 'buzz';
+  if (/fade|漸層|碎蓋|crew|cut/.test(s)) return 'short';
+  if (/mullet|狼|wolf|shag|羊毛|jellyfish|水母/.test(s)) return 'mullet';
+  if (/pomp|油頭|背頭|側背|前刺|spike|comb/.test(s)) return 'pomp';
+  if (/curtain|中分|瀏海|空氣|韓|bowl/.test(s)) return 'curtain';
+  if (/bob|妹妹|齊|短髮|lob/.test(s)) return 'bob';
+  if (/long|長髮|捲|wave|卷/.test(s)) return 'long';
+  if (/afro|爆炸|蓬/.test(s)) return 'afro';
+  return 'short';
+}
+
+// programmatic SVG silhouette per category — paths drawn against a 250×300 viewBox
+function buildSilhouette(variant) {
+  const dark = '#1A1714', mid = '#2D2520', accent = '#B8946A';
+  // common: face outline + neck (peeks out below hair)
+  const face = `<ellipse cx="125" cy="155" rx="48" ry="60" fill="${mid}" opacity="0.85"/>
+    <path d="M95 200 Q95 230 125 235 Q155 230 155 200 L155 220 Q155 250 125 265 L125 300 L95 300 Z" fill="${mid}" opacity="0.85"/>`;
+
+  const hair = {
+    buzz: `<path d="M77 130 Q77 95 125 92 Q173 95 173 130 Q173 150 173 158 Q150 145 125 145 Q100 145 77 158 Q77 150 77 130 Z" fill="${dark}"/>
+      <path d="M85 120 Q90 105 125 102 Q160 105 165 120" stroke="${accent}" stroke-width="0.8" fill="none" opacity="0.5"/>`,
+    short: `<path d="M72 145 Q72 85 125 82 Q178 85 178 145 Q178 165 175 175 Q160 155 125 155 Q90 155 75 175 Q72 165 72 145 Z" fill="${dark}"/>
+      <path d="M165 95 Q175 110 178 145" stroke="${accent}" stroke-width="1" fill="none" opacity="0.6"/>
+      <path d="M88 170 Q90 165 95 162" stroke="${accent}" stroke-width="0.6" fill="none" opacity="0.5"/>`,
+    mullet: `<path d="M72 140 Q72 80 125 78 Q178 80 178 140 Q178 160 178 175 L185 240 Q180 260 165 250 Q170 200 168 180 Q160 165 125 165 Q90 165 78 180 Q72 165 72 140 Z" fill="${dark}"/>
+      <path d="M168 180 Q180 220 185 245" stroke="${accent}" stroke-width="1" fill="none" opacity="0.55"/>
+      <path d="M82 95 Q88 85 100 82" stroke="${accent}" stroke-width="0.8" fill="none" opacity="0.5"/>`,
+    pomp: `<path d="M75 130 Q70 75 100 60 Q130 50 155 70 Q175 60 180 90 Q183 120 178 150 Q165 138 145 138 Q140 100 125 95 Q105 100 95 145 Q85 148 75 145 Q72 140 75 130 Z" fill="${dark}"/>
+      <path d="M105 65 Q120 55 145 65" stroke="${accent}" stroke-width="1.2" fill="none" opacity="0.7"/>
+      <path d="M115 72 Q125 62 142 72" stroke="${accent}" stroke-width="0.8" fill="none" opacity="0.5"/>`,
+    curtain: `<path d="M70 145 Q68 80 125 75 Q182 80 180 145 Q175 175 168 188 Q140 160 125 160 Q108 160 82 188 Q75 175 70 145 Z M115 90 Q110 130 95 175 Q90 180 88 185 M135 90 Q140 130 155 175 Q160 180 162 185" fill="${dark}"/>
+      <path d="M120 100 L115 170" stroke="${accent}" stroke-width="0.7" fill="none" opacity="0.5"/>
+      <path d="M130 100 L135 170" stroke="${accent}" stroke-width="0.7" fill="none" opacity="0.5"/>`,
+    bob: `<path d="M68 140 Q65 75 125 72 Q185 75 182 140 L185 215 Q180 225 165 220 L160 195 Q140 180 125 180 Q110 180 90 195 L85 220 Q70 225 65 215 Z" fill="${dark}"/>
+      <path d="M75 200 Q90 215 100 218" stroke="${accent}" stroke-width="0.8" fill="none" opacity="0.5"/>
+      <path d="M175 200 Q160 215 150 218" stroke="${accent}" stroke-width="0.8" fill="none" opacity="0.5"/>`,
+    long: `<path d="M65 140 Q62 75 125 70 Q188 75 185 140 L195 280 Q188 290 175 285 L168 250 Q160 200 155 175 Q140 168 125 168 Q110 168 95 175 Q90 200 82 250 L75 285 Q62 290 55 280 Z" fill="${dark}"/>
+      <path d="M70 200 Q68 240 75 280" stroke="${accent}" stroke-width="0.8" fill="none" opacity="0.55"/>
+      <path d="M180 200 Q182 240 175 280" stroke="${accent}" stroke-width="0.8" fill="none" opacity="0.55"/>`,
+    afro: `<circle cx="125" cy="120" r="62" fill="${dark}"/>
+      <circle cx="90" cy="100" r="22" fill="${dark}"/>
+      <circle cx="160" cy="100" r="22" fill="${dark}"/>
+      <circle cx="105" cy="80" r="18" fill="${dark}"/>
+      <circle cx="148" cy="80" r="18" fill="${dark}"/>
+      <circle cx="125" cy="70" r="20" fill="${dark}"/>
+      <circle cx="78" cy="135" r="18" fill="${dark}"/>
+      <circle cx="172" cy="135" r="18" fill="${dark}"/>
+      <circle cx="115" cy="105" r="3" fill="${accent}" opacity="0.6"/>
+      <circle cx="140" cy="115" r="3" fill="${accent}" opacity="0.6"/>`,
+  };
+
+  return `<svg viewBox="0 0 250 300" xmlns="http://www.w3.org/2000/svg">
+    ${face}
+    ${hair[variant] || hair.short}
+  </svg>`;
+}
+
+const LIBRARY = [
+  {
+    name: "漸層短髮",
+    en: "Fade",
+    aliases: ["fade", "漸層", "推剪漸層"],
+    era: "2010s",
+    tagline: "從皮膚漸進的光譜",
+    description: "兩側自皮膚向頂部漸層推剪、頂部保留長度的男士剪裁。源自美國軍隊與黑人理髮文化，2010 年後因社群媒體普及成為全球主流。",
+    difficulty: 4,
+    duration: "40 min",
+    example_zh: "兩側幫我推 0 號漸到 3 號，頂部留長一點。",
+    example_en: "Skin fade on the sides going up to a 3, keep the top long.",
+    evolution: [
+      { year: "1940", label: "軍用起源", body: "二戰美軍要求頭髮整齊乾淨，平頭與漸層成為標準軍隊髮型。" },
+      { year: "1980", label: "嘻哈延伸", body: "嘻哈文化將漸層精緻化，發展出 high top fade 等變體。" },
+      { year: "2000", label: "理髮店復興", body: "美國黑人理髮店將漸層推至毫米精度，成為街頭潮流核心。" },
+      { year: "2015", label: "全球擴散", body: "Instagram 讓漸層教學與成品照大量傳播，亞洲設計師開始導入。" },
+      { year: "2023", label: "亞洲在地化", body: "結合碎蓋瀏海與漸層側邊，發展出具東亞特色的混血版本。" },
+    ],
+  },
+  {
+    name: "寸頭",
+    en: "Asian Crew Cut",
+    aliases: ["寸頭", "板寸", "短寸"],
+    era: "1950s",
+    tagline: "最低維護的清爽",
+    description: "全頭剪短至 1-2 公分長度的傳統男士髮型，亞洲男性最普及的入伍剪、學生剪。耐熱、好整理、適合任何臉型。",
+    difficulty: 1,
+    duration: "20 min",
+    example_zh: "全頭剃寸，大概留一公分就好。",
+    example_en: "Cut everything down to about a centimeter, please.",
+    evolution: [
+      { year: "1950", label: "軍校標準", body: "亞洲各國軍校與男校以寸頭為標配，象徵紀律與整齊。" },
+      { year: "1970", label: "勞動階級", body: "工地、工廠工作者偏好寸頭，便於戴安全帽與大量出汗環境。" },
+      { year: "1990", label: "學生制式", body: "台灣男學生髮禁時期的標準髮型，普及到整個世代。" },
+      { year: "2010", label: "髮禁解除", body: "髮禁鬆綁後寸頭從強制變成個人選擇，反而出現復古迷戀。" },
+      { year: "2024", label: "極簡選擇", body: "都會男性將寸頭視為極簡美學的展現，搭配修整鬢角與輪廓線。" },
+    ],
+  },
+  {
+    name: "平頭",
+    en: "Flat Top",
+    aliases: ["flat top", "板平頭"],
+    era: "1950s",
+    tagline: "幾何感的方正輪廓",
+    description: "頂部剪成平面、四周修短的男士髮型。1950 年代美國流行，1980 年代被嘻哈文化重新詮釋為 high top flat。",
+    difficulty: 4,
+    duration: "35 min",
+    example_zh: "頂部要平，可以幫我留一點高度。",
+    example_en: "I want the top flat with a bit of height, please.",
+    evolution: [
+      { year: "1950", label: "戰後流行", body: "美國戰後年輕男性流行的乾淨剪裁，象徵勝利與秩序。" },
+      { year: "1980", label: "嘻哈高頂", body: "Kid 'n Play 等饒舌歌手將平頭加高至 high top flat，成為文化符號。" },
+      { year: "1990", label: "軍中標準", body: "海軍陸戰隊規定髮型，至今仍是部分軍校與警校標配。" },
+      { year: "2010", label: "復古回潮", body: "千禧年後因復古浪潮，許多設計師將平頭與漸層結合重新提案。" },
+      { year: "2022", label: "亞洲解構", body: "日韓設計師加入紋理與柔邊，讓平頭從方正變得更貼合東方臉型。" },
+    ],
+  },
+  {
+    name: "油頭背頭",
+    en: "Slick Back",
+    aliases: ["slick back", "油頭", "背頭", "後梳油頭"],
+    era: "1990s",
+    tagline: "東方紳士的成熟感",
+    description: "頂部留長並向後梳、用髮油定型的成熟男士髮型。1990 年代香港金融業與台灣商業圈大量出現，象徵專業與成功。",
+    difficulty: 3,
+    duration: "30 min",
+    example_zh: "幫我剪一個油頭，後面要能整片往後梳。",
+    example_en: "I want a slick back — long enough on top to comb it all the way back.",
+    evolution: [
+      { year: "1920", label: "西方源流", body: "美國禁酒令時期紳士髮油成為標配，影響全球男士造型。" },
+      { year: "1990", label: "亞洲商業", body: "香港金融業與華爾街呼應，背頭成為亞洲都會菁英髮型。" },
+      { year: "2000", label: "黑幫電影", body: "杜琪峰、馬丁史柯西斯電影中的角色形象強化背頭與權力的連結。" },
+      { year: "2014", label: "現代復興", body: "Peaky Blinders 讓背頭與 undercut 結合，重新進入年輕男性視野。" },
+      { year: "2023", label: "柔化版本", body: "亞洲設計師捨棄硬挺髮油，改用霧面髮蠟讓背頭更自然。" },
+    ],
+  },
+  {
+    name: "二次元髮型",
+    en: "Anime Hair",
+    aliases: ["二次元", "動漫風", "anime cut"],
+    era: "2010s",
+    tagline: "從紙上跳出來的線條",
+    description: "模仿日本動漫角色尖刺、不對稱、誇張瀏海的男士髮型。2010 年後在 Cosplay 圈擴散，逐漸滲入主流年輕設計。",
+    difficulty: 5,
+    duration: "60 min",
+    example_zh: "想剪一個二次元感的，瀏海要能立起來。",
+    example_en: "I want an anime-inspired cut — bangs that can stand up.",
+    evolution: [
+      { year: "1990", label: "動漫全球化", body: "《七龍珠》、《新世紀福音戰士》讓動漫角色髮型進入流行文化視野。" },
+      { year: "2005", label: "Cosplay 崛起", body: "動漫展興起，扮演者開始追求真實還原角色髮型，髮型師接到大量需求。" },
+      { year: "2012", label: "K-pop 借鏡", body: "韓國偶像團體將二次元元素融入男團舞台造型，將動漫髮型帶進主流。" },
+      { year: "2018", label: "TikTok 普及", body: "動漫剪短影片在 TikTok 累積數十億播放，年輕族群將其日常化。" },
+      { year: "2024", label: "亞文化主流", body: "二次元髮型不再侷限於 Cosplay，成為 Z 世代男生表達個性的選項之一。" },
+    ],
+  },
+  {
+    name: "韓系空氣瀏海",
+    en: "Korean Air Bangs",
+    aliases: ["空氣瀏海", "air bangs", "韓系瀏海"],
+    era: "2010s",
+    tagline: "輕到能呼吸的瀏海",
+    description: "以間隔感剪法形成可看見額頭的薄透瀏海，2010 年後韓劇與 K-pop 帶動的女性與男性共通流行。",
+    difficulty: 3,
+    duration: "30 min",
+    example_zh: "想剪一個空氣瀏海，要看得到額頭那種。",
+    example_en: "I'd like air bangs — the kind you can see the forehead through.",
+    evolution: [
+      { year: "2008", label: "韓劇出現", body: "韓劇女主角的薄瀏海開始被亞洲女性大量模仿。" },
+      { year: "2014", label: "技法成熟", body: "韓國美髮業界開發出專用的「點剪法」，讓瀏海更輕透。" },
+      { year: "2018", label: "全球擴散", body: "BLACKPINK、TWICE 將空氣瀏海帶上世界舞台，歐美女性也開始嘗試。" },
+      { year: "2021", label: "男版誕生", body: "韓國男偶像將空氣瀏海男版化，與短髮搭配出柔和的中性氣質。" },
+      { year: "2024", label: "在地調整", body: "東南亞與台灣設計師根據毛流粗細調整剪法，發展出更符合本地的版本。" },
+    ],
+  },
+  {
+    name: "中分油頭",
+    en: "Center Part Slick",
+    aliases: ["中分", "中分油頭", "middle part slick"],
+    era: "2020s",
+    tagline: "Y2K 復興的優雅",
+    description: "頂部從正中央分線、兩側微微貼順的男士髮型。2020 年後 Y2K 復古潮帶起，TikTok 上大量年輕男性嘗試。",
+    difficulty: 3,
+    duration: "35 min",
+    example_zh: "想剪一個正中分的油頭，不要太硬。",
+    example_en: "Center part slick, but keep it soft — not too stiff.",
+    evolution: [
+      { year: "1990", label: "Boy Band 起源", body: "Backstreet Boys、N'SYNC 成員的中分造型成為 90 年代男孩象徵。" },
+      { year: "2000", label: "千禧過渡", body: "Justin Timberlake 早期中分造型在千禧之交大量出現。" },
+      { year: "2010", label: "短暫沉寂", body: "Undercut 與漸層興起後，中分被視為過時造型，幾乎絕跡。" },
+      { year: "2020", label: "Y2K 回潮", body: "TikTok 上 Y2K 美學帶動 Z 世代男生重新接受中分造型。" },
+      { year: "2024", label: "韓系版本", body: "韓國男偶像將中分結合空氣感與柔順感，成為現代版主流。" },
+    ],
+  },
+  {
+    name: "日系狼剪",
+    en: "Japanese Wolf Cut",
+    aliases: ["狼剪", "wolf cut", "ウルフカット"],
+    era: "2020s",
+    tagline: "層次堆疊的野性",
+    description: "頂部短層次、後頸長尾巴的男女皆可髮型。2021 年從韓國藝人開始全球擴散，是繼碎蓋之後最廣的亞洲創新剪。",
+    difficulty: 4,
+    duration: "50 min",
+    example_zh: "想剪一個狼剪，後面留長一點。",
+    example_en: "I want a wolf cut — keep the back a bit longer.",
+    evolution: [
+      { year: "1970", label: "Mullet 母型", body: "西方 Mullet 狼尾頭為其遠祖，當時被視為勞動階級髮型。" },
+      { year: "2015", label: "韓國前奏", body: "韓國設計師開始嘗試在 Mullet 基礎上增加層次與柔邊。" },
+      { year: "2021", label: "TikTok 爆紅", body: "韓國女偶像剪狼剪後，TikTok 上 #wolfcut 累積數億觀看。" },
+      { year: "2022", label: "男女皆宜", body: "原本以女性為主的狼剪，男版本快速擴散，成為韓系男子標配之一。" },
+      { year: "2024", label: "風格分化", body: "出現韓系狼剪、日系狼剪、復古 Mullet 等不同風格分支。" },
+    ],
+  },
+  {
+    name: "二區塊剪",
+    en: "Two Block Cut",
+    aliases: ["two block", "투블럭", "韓系二區塊"],
+    era: "2010s",
+    tagline: "上下分明的韓系結構",
+    description: "頂部與後上方留長、兩側與後下方推短的男士剪裁。源自韓國，是 K-pop 男團最具代表性的髮型結構。",
+    difficulty: 3,
+    duration: "40 min",
+    example_zh: "想剪 two block，兩側推短一點。",
+    example_en: "Two block cut, please — shorter on the sides.",
+    evolution: [
+      { year: "2010", label: "韓國軍隊", body: "韓國徵兵制下發展出能適應軍隊規範又有時尚感的剪裁。" },
+      { year: "2014", label: "EXO 普及", body: "K-pop 男團 EXO 出道造型普遍採用 two block，迅速擴散到亞洲。" },
+      { year: "2017", label: "亞洲標配", body: "台日泰越等亞洲國家男生大量模仿，成為跨國共通髮型。" },
+      { year: "2020", label: "結合碎蓋", body: "two block 與微分碎蓋結合，發展出韓式碎蓋雙結構造型。" },
+      { year: "2024", label: "演化分支", body: "出現偏軍裝感、偏柔和感、偏次文化感等不同子流派。" },
+    ],
+  },
+  {
+    name: "韓系拉麵頭",
+    en: "Korean Volume Perm",
+    aliases: ["拉麵頭", "韓系燙髮", "ramen perm"],
+    era: "2020s",
+    tagline: "蓬鬆但不誇張的卷度",
+    description: "在頂部與兩側做出拉麵般細密小卷的男士燙髮。2020 年後韓國男偶像引領，亞洲年輕男性中快速擴散。",
+    difficulty: 4,
+    duration: "120 min",
+    example_zh: "想燙拉麵頭，但卷不要太緊。",
+    example_en: "I'd like a ramen perm, but not too tight.",
+    evolution: [
+      { year: "2015", label: "燙髮回潮", body: "韓國男生開始嘗試輕度燙髮，跳脫傳統直髮形象。" },
+      { year: "2018", label: "細捲技法", body: "韓國美髮業界開發專為男生設計的細捲燙髮技術。" },
+      { year: "2021", label: "K-pop 帶動", body: "Stray Kids、TXT 等男團成員大量採用，引發亞洲男生嘗試。" },
+      { year: "2023", label: "台灣普及", body: "台灣男生客層大量湧入髮廊指定燙拉麵頭，成為新主流。" },
+      { year: "2024", label: "技法精緻化", body: "出現只在頂部燙、只在瀏海燙等局部燙法，更易於日常造型。" },
+    ],
+  },
+  {
+    name: "蘋果頭",
+    en: "Apple Cut",
+    aliases: ["蘋果頭", "apple head", "圓蓋頭"],
+    era: "2000s",
+    tagline: "圓潤到底的可愛感",
+    description: "整體呈現圓潤蓬鬆形狀的中性短髮。2000 年代日本女性流行，後來男性與兒童也採用。",
+    difficulty: 3,
+    duration: "35 min",
+    example_zh: "想剪蘋果頭，整體圓圓的那種。",
+    example_en: "I want an apple cut — round all over.",
+    evolution: [
+      { year: "2003", label: "日本起源", body: "日本沙龍雜誌《MORE》提出蘋果頭概念，標榜可愛感。" },
+      { year: "2008", label: "兒童版本", body: "台日韓兒童髮型沙龍將蘋果頭作為兒童經典剪。" },
+      { year: "2015", label: "中性化趨勢", body: "中性審美興起後，男生也開始接受圓潤短髮造型。" },
+      { year: "2020", label: "結合燙髮", body: "蘋果頭與輕燙結合，讓圓潤感更立體蓬鬆。" },
+      { year: "2024", label: "回到極簡", body: "近年又有回歸不燙不染的純剪版本，強調剪裁本身的圓潤線條。" },
+    ],
+  },
+  {
+    name: "Edgar Cut",
+    en: "Edgar Cut",
+    aliases: ["edgar", "edgar cut", "拉丁碎蓋", "墨西哥碎蓋"],
+    era: "2020s",
+    tagline: "拉丁裔的方正前緣",
+    description: "前緣剪成水平直線、兩側漸層的男士髮型。源自墨西哥裔美國社區，2020 年後 TikTok 帶動全球流行。",
+    difficulty: 4,
+    duration: "35 min",
+    example_zh: "想剪 Edgar，前面要平平的那種。",
+    example_en: "I want an Edgar cut with a straight front edge.",
+    evolution: [
+      { year: "1990", label: "墨裔起源", body: "美國德州、加州的墨西哥裔社區發展出此剪法，最早稱為 Takuache cut。" },
+      { year: "2010", label: "理髮店流通", body: "拉丁裔理髮店間流通的內部剪法，外界少見。" },
+      { year: "2019", label: "TikTok 起飛", body: "拉丁裔青少年在 TikTok 分享 Edgar 剪法，迅速走紅。" },
+      { year: "2022", label: "全球擴散", body: "歐洲、亞洲都出現指定剪 Edgar 的客人，成為跨文化潮流。" },
+      { year: "2024", label: "次文化爭議", body: "部分人視為文化挪用，引發主流髮廊是否該提供此服務的討論。" },
+    ],
+  },
+  {
+    name: "花椰菜頭",
+    en: "Broccoli Cut",
+    aliases: ["broccoli cut", "broccoli", "花椰菜"],
+    era: "2020s",
+    tagline: "Z 世代的捲度幽默",
+    description: "頂部留長並燙成蓬鬆小捲、形似花椰菜的男士髮型。2021 年後 TikTok 上由白人男性 Z 世代帶起，已成新一代代表造型。",
+    difficulty: 4,
+    duration: "90 min",
+    example_zh: "想剪花椰菜頭，上面要捲捲的。",
+    example_en: "I want a broccoli cut — curly and fluffy on top.",
+    evolution: [
+      { year: "2018", label: "燙髮復興", body: "歐美男生重新接受燙髮，跳脫過去油頭單一形象。" },
+      { year: "2021", label: "TikTok 爆紅", body: "白人 Z 世代男生在 TikTok 分享自己的捲頂造型，被網友戲稱「broccoli」。" },
+      { year: "2022", label: "梗圖文化", body: "花椰菜頭成為 TikTok 梗圖代名詞，反而強化了它的傳播。" },
+      { year: "2023", label: "亞洲嘗試", body: "亞洲年輕男性開始嘗試，但因髮質差異需要特殊燙法配合。" },
+      { year: "2024", label: "風格進化", body: "出現深層次、淺層次、不同捲度大小的多種變體版本。" },
+    ],
+  },
+  {
+    name: "中分窗簾",
+    en: "Curtain Bangs",
+    aliases: ["curtain bangs", "窗簾頭", "curtain", "Z 世代中分"],
+    era: "2020s",
+    tagline: "復古Y2K的中央分線",
+    description: "頂部留長並從中央分開、兩側自然垂落的男女皆可髮型。1990 年代 Boy Band 的當代復興版本。",
+    difficulty: 2,
+    duration: "30 min",
+    example_zh: "想要中分的瀏海，兩邊自然垂下來。",
+    example_en: "Curtain bangs — let them fall naturally on both sides.",
+    evolution: [
+      { year: "1970", label: "Farrah Fawcett", body: "美國女星 Farrah Fawcett 的中分波浪成為原型。" },
+      { year: "1990", label: "Boy Band 男版", body: "BSB、N'SYNC 將中分流暢化，成為男性版本標配。" },
+      { year: "2015", label: "暫時消失", body: "Undercut 興起後中分幾乎被淘汰，僅剩少數復古愛好者保留。" },
+      { year: "2020", label: "TikTok 復興", body: "Y2K 美學重來，TikTok 教學影片讓中分快速回到主流。" },
+      { year: "2024", label: "性別模糊", body: "中分窗簾不分男女都能剪，是最具代表性的中性化髮型之一。" },
+    ],
+  },
+  {
+    name: "現代狼尾頭",
+    en: "Modern Mullet",
+    aliases: ["modern mullet", "現代mullet", "新狼尾"],
+    era: "2020s",
+    tagline: "重新詮釋的反叛",
+    description: "保留 Mullet 前短後長精神，但兩側更短、後段更具層次的當代版本。2020 年後反主流潮流之代表。",
+    difficulty: 4,
+    duration: "50 min",
+    example_zh: "想剪現代版的 Mullet，後面要有層次。",
+    example_en: "I want a modern mullet with layered length in the back.",
+    evolution: [
+      { year: "1980", label: "原型 Mullet", body: "勞工階級與搖滾歌手的標誌髮型，以醜美感聞名。" },
+      { year: "2000", label: "全面退場", body: "Mullet 被視為時尚禁區，主流髮廊幾乎不再提供。" },
+      { year: "2019", label: "次文化回流", body: "反主流潮流興起，Mullet 在搖滾、滑板族群間悄悄回歸。" },
+      { year: "2021", label: "TikTok 推波", body: "Miley Cyrus、Joe Keery 等名人剪 Mullet 後，引發大量嘗試。" },
+      { year: "2024", label: "性別擴張", body: "原本以男性為主的 Mullet 演化出大量女版與中性版本。" },
+    ],
+  },
+  {
+    name: "Wolf Cut",
+    en: "Wolf Cut",
+    aliases: ["wolf cut", "狼剪", "新狼剪"],
+    era: "2021",
+    tagline: "TikTok 世代的全球潮流",
+    description: "結合 Mullet 與 Shag 的層次感剪法，頂部短、底層長、整體蓬鬆。2021 年韓國藝人帶起後迅速全球擴散。",
+    difficulty: 4,
+    duration: "45 min",
+    example_zh: "想剪 Wolf Cut，整體要蓬。",
+    example_en: "Wolf cut, please — keep it voluminous all over.",
+    evolution: [
+      { year: "1970", label: "Shag 起源", body: "Shag 髮型為其結構母型，由 Jane Fonda 等人帶起。" },
+      { year: "2015", label: "韓國前奏", body: "韓國設計師開始將 Shag 與 Mullet 元素結合實驗。" },
+      { year: "2021", label: "TikTok 爆款", body: "韓國女偶像剪 Wolf Cut 後，#wolfcut 累積數十億播放。" },
+      { year: "2022", label: "男女通用", body: "從原本以女性為主擴散到男性，成為跨性別流行剪。" },
+      { year: "2024", label: "風格分支", body: "韓系 Wolf、日系 Wolf、歐美 Wolf 各自發展出獨特風格。" },
+    ],
+  },
+  {
+    name: "Hush Cut",
+    en: "Hush Cut",
+    aliases: ["hush cut", "허쉬컷", "韓劇女主髮型"],
+    era: "2021",
+    tagline: "輕盈柔順的韓劇感",
+    description: "頂部薄層次、兩側自然外翻、整體輕盈的女性短至中長髮型。2021 年韓劇《我的出走日記》女主角帶起。",
+    difficulty: 3,
+    duration: "40 min",
+    example_zh: "想剪 Hush Cut，要那種輕飄飄的感覺。",
+    example_en: "I want a hush cut — light and airy.",
+    evolution: [
+      { year: "2015", label: "韓國基礎", body: "韓國設計師開始嘗試在女性短髮中加入大量輕層次。" },
+      { year: "2020", label: "技法成熟", body: "點剪、滑剪等輕量化技法在韓國美髮業界標準化。" },
+      { year: "2021", label: "韓劇引爆", body: "《我的出走日記》、《二十五，二十一》女主角採用後迅速擴散。" },
+      { year: "2023", label: "亞洲普及", body: "台日泰越等地女性大量指定剪 Hush Cut，成為韓系代表。" },
+      { year: "2024", label: "結合燙髮", body: "Hush Cut 與輕度燙髮結合，發展出更立體版本。" },
+    ],
+  },
+  {
+    name: "章魚剪",
+    en: "Octopus Cut",
+    aliases: ["octopus cut", "octopus haircut"],
+    era: "2022",
+    tagline: "頂部俐落底部飄動",
+    description: "頂部極短層次、底部留長並有大量薄層次的女性髮型。形似章魚的觸手，2022 年 TikTok 流行至今。",
+    difficulty: 4,
+    duration: "55 min",
+    example_zh: "想剪章魚剪，底層要薄薄的飄。",
+    example_en: "Octopus cut — thin, flowing layers at the bottom.",
+    evolution: [
+      { year: "2018", label: "Shag 復興", body: "歐美 Shag 剪法回歸，為章魚剪做鋪陳。" },
+      { year: "2021", label: "Wolf Cut 暖場", body: "Wolf Cut 流行讓觀眾接受了「短頂部+長底部」的結構。" },
+      { year: "2022", label: "命名定型", body: "TikTok 創作者首次使用「octopus」一詞描述此剪法，迅速被採用。" },
+      { year: "2023", label: "明星加持", body: "Bella Hadid 等模特兒嘗試後，引發大量主流女性跟進。" },
+      { year: "2024", label: "韓化版本", body: "韓國設計師加入更多臉框層次，發展出韓式章魚剪變體。" },
+    ],
+  },
+  {
+    name: "蝴蝶剪",
+    en: "Butterfly Cut",
+    aliases: ["butterfly cut", "蝴蝶層次"],
+    era: "2022",
+    tagline: "層次飛揚的雙翼感",
+    description: "頂部與底部各有不同長度層次、整體蓬鬆飛揚的女性中長髮型。2022 年 TikTok 由 Jennifer Aniston 90 年代髮型啟發。",
+    difficulty: 4,
+    duration: "55 min",
+    example_zh: "想剪蝴蝶剪，要有 90 年代 Jennifer Aniston 那種感。",
+    example_en: "Butterfly cut — that 90s Jennifer Aniston feel.",
+    evolution: [
+      { year: "1995", label: "原型 Rachel", body: "Friends 的 Rachel 髮型成為 90 年代女性標誌。" },
+      { year: "2010", label: "退場期", body: "千禧年後直髮與 Lob 流行，Rachel 髮型淡出。" },
+      { year: "2020", label: "Y2K 暖場", body: "Y2K 復興讓 90 年代美學重新被年輕世代發現。" },
+      { year: "2022", label: "TikTok 命名", body: "創作者將其重新包裝為「butterfly cut」，賦予新世代符號。" },
+      { year: "2024", label: "亞洲調整", body: "亞洲設計師根據毛流粗細降低層次密度，發展出更柔和版本。" },
+    ],
+  },
+  {
+    name: "姬髮式",
+    en: "Hime Cut",
+    aliases: ["hime cut", "姬髮式", "公主切"],
+    era: "2020s",
+    tagline: "日本古典的方正美學",
+    description: "兩側臉框剪短至下巴、後方保留長度的女性髮型。源自日本平安時代貴族，2020 年後因動漫與韓國女偶像重新流行。",
+    difficulty: 3,
+    duration: "40 min",
+    example_zh: "想剪姬髮式，兩邊要剪到下巴的線條。",
+    example_en: "Hime cut — chin-length side pieces, please.",
+    evolution: [
+      { year: "0794", label: "平安貴族", body: "日本平安時代貴族女性髮型，象徵地位與美。" },
+      { year: "1990", label: "動漫角色", body: "美少女動漫角色普遍採用此髮型，成為二次元視覺符號。" },
+      { year: "2015", label: "Cosplay 復興", body: "動漫展上 Cosplayer 開始將姬髮式現實化。" },
+      { year: "2021", label: "K-pop 採用", body: "韓國女偶像 Iz*One、aespa 成員嘗試姬髮式現代版。" },
+      { year: "2024", label: "主流接受", body: "從 Cosplay 與偶像延伸至日常造型，年輕女性大量嘗試。" },
+    ],
+  },
+  {
+    name: "Buzz Cut",
+    en: "Buzz Cut",
+    aliases: ["buzz cut", "buzz", "推剪頭"],
+    era: "1940s",
+    tagline: "極簡到極致",
+    description: "全頭以推剪推至極短的男士髮型。1940 年代美軍標配，戰後成為勞動階級與運動員代表。",
+    difficulty: 1,
+    duration: "15 min",
+    example_zh: "推一個 Buzz Cut，0.5 號就好。",
+    example_en: "Buzz cut, please — about a half guard.",
+    evolution: [
+      { year: "1940", label: "二戰起源", body: "美軍士兵入伍後一律剪 Buzz Cut，提升衛生與紀律。" },
+      { year: "1960", label: "運動員採用", body: "美式足球、籃球、棒球選手普遍剪 Buzz Cut，便於比賽與訓練。" },
+      { year: "1990", label: "理髮店延續", body: "黑人理髮店將 Buzz Cut 結合漸層，發展出 fade buzz 子類。" },
+      { year: "2010", label: "極簡美學", body: "城市男性將 Buzz Cut 視為極簡風格的展現。" },
+      { year: "2024", label: "性別擴張", body: "越來越多女性嘗試 Buzz Cut，挑戰傳統女性留長髮的審美規範。" },
+    ],
+  },
+  {
+    name: "Crew Cut",
+    en: "Crew Cut",
+    aliases: ["crew cut", "crew"],
+    era: "1950s",
+    tagline: "陸戰隊的整齊男孩",
+    description: "頂部留 1-2 公分、兩側更短的傳統美式男士髮型。1950 年代起源於哈佛划船隊，成為紳士標配。",
+    difficulty: 2,
+    duration: "25 min",
+    example_zh: "Crew Cut，頂部留兩公分左右。",
+    example_en: "Crew cut — about 2 cm on top.",
+    evolution: [
+      { year: "1900", label: "哈佛起源", body: "哈佛划船隊隊員剪此髮型以避免槳與頭髮糾纏，故名「crew cut」。" },
+      { year: "1950", label: "戰後流行", body: "二戰退伍軍人帶回 Crew Cut，成為美國中產階級男性標配。" },
+      { year: "1970", label: "保守象徵", body: "嬉皮文化興起後 Crew Cut 被視為保守派代表。" },
+      { year: "2000", label: "復古回潮", body: "懷舊風讓 Crew Cut 重新進入年輕人選項。" },
+      { year: "2020", label: "亞洲在地化", body: "亞洲設計師將 Crew Cut 與漸層結合，符合東方臉型比例。" },
+    ],
+  },
+  {
+    name: "Pompadour",
+    en: "Pompadour",
+    aliases: ["pompadour", "蓬巴度", "貓王頭"],
+    era: "1950s",
+    tagline: "貓王時代的高聳前峰",
+    description: "頂部極長並向上前向梳起、形成高聳前峰的男士髮型。源自 1700 年代法國，1950 年代因 Elvis Presley 大紅。",
+    difficulty: 4,
+    duration: "50 min",
+    example_zh: "想剪一個 Pompadour，前面要能立起來。",
+    example_en: "I want a pompadour with a high front peak.",
+    evolution: [
+      { year: "1750", label: "法國起源", body: "法王路易十五情婦 Madame de Pompadour 將前峰造型帶入時尚。" },
+      { year: "1950", label: "貓王引爆", body: "Elvis Presley 將 Pompadour 男版化，成為搖滾樂代表造型。" },
+      { year: "1980", label: "Rockabilly 延續", body: "搖滾派與重金屬樂手保留 Pompadour，但加上更多髮油。" },
+      { year: "2010", label: "Mad Men 復興", body: "美劇 Mad Men 帶動 1960s 復興，Pompadour 重回主流。" },
+      { year: "2020", label: "亞洲變形", body: "亞洲男性將 Pompadour 柔化，搭配漸層側邊與霧面髮蠟。" },
+    ],
+  },
+  {
+    name: "Quiff",
+    en: "Quiff",
+    aliases: ["quiff", "高捲頭"],
+    era: "1950s",
+    tagline: "Pompadour 的弟弟",
+    description: "頂部留長並向前捲起、形成低調前峰的男士髮型。比 Pompadour 更柔和、更日常。",
+    difficulty: 3,
+    duration: "35 min",
+    example_zh: "想剪 Quiff，比 Pompadour 矮一點的版本。",
+    example_en: "Quiff — a shorter version of pompadour.",
+    evolution: [
+      { year: "1950", label: "戰後英倫", body: "Quiff 在英國年輕男性間流行，與美國 Pompadour 並存。" },
+      { year: "1980", label: "搖滾延續", body: "Morrissey、David Bowie 等英倫搖滾巨星保留 Quiff 造型。" },
+      { year: "2010", label: "現代復興", body: "David Beckham、Justin Timberlake 等將 Quiff 帶入當代主流。" },
+      { year: "2018", label: "結合 Fade", body: "Quiff 與漸層結合，成為現代男士最常見造型之一。" },
+      { year: "2024", label: "亞洲版本", body: "亞洲設計師將 Quiff 高度降低，更貼合東方臉型比例。" },
+    ],
+  },
+  {
+    name: "Undercut",
+    en: "Undercut",
+    aliases: ["undercut", "內削"],
+    era: "1920s",
+    tagline: "頂底分明的硬派",
+    description: "兩側剃短至接近皮膚、頂部留長的男士髮型。1920 年代禁酒令時期黑幫造型，2010 年後因 Peaky Blinders 全球復興。",
+    difficulty: 3,
+    duration: "40 min",
+    example_zh: "想剪 Undercut，兩邊推到底。",
+    example_en: "Undercut — sides taken right down.",
+    evolution: [
+      { year: "1920", label: "黑幫時代", body: "禁酒令時期美國黑幫採用 Undercut，象徵冷酷與權威。" },
+      { year: "1940", label: "戰時實用", body: "二戰士兵採用 Undercut，便於戴鋼盔且後方易整理。" },
+      { year: "2014", label: "Peaky Blinders", body: "英劇 Peaky Blinders 引爆 Undercut 全球復興。" },
+      { year: "2018", label: "亞洲普及", body: "亞洲男性大量指定剪 Undercut，與 Pompadour 結合。" },
+      { year: "2024", label: "柔化版本", body: "現代設計師捨棄硬切線，改用漸層讓 Undercut 更自然。" },
+    ],
+  },
+  {
+    name: "Mohawk",
+    en: "Mohawk",
+    aliases: ["mohawk", "莫西干", "莫霍克"],
+    era: "1980s",
+    tagline: "龐克永恆的反抗",
+    description: "兩側完全剃光、僅留頂部中央一條髮帶並豎立的男士髮型。源自北美原住民 Mohawk 族，1980 年代被龐克運動採用。",
+    difficulty: 5,
+    duration: "60 min",
+    example_zh: "想剪 Mohawk，兩邊全部推光。",
+    example_en: "Mohawk — shave the sides completely.",
+    evolution: [
+      { year: "1700", label: "原住民起源", body: "北美 Mohawk 族戰士的標誌性髮型，象徵勇氣。" },
+      { year: "1976", label: "龐克運動", body: "倫敦龐克運動採用 Mohawk 作為反抗主流的視覺武器。" },
+      { year: "1990", label: "次文化標誌", body: "Mohawk 成為龐克、金屬、搖滾族群的共通符號。" },
+      { year: "2010", label: "時尚化", body: "高端時尚秀採用 Mohawk 元素，但通常為造型誇張版。" },
+      { year: "2024", label: "Faux Hawk 主流", body: "由真 Mohawk 衍生出的 Faux Hawk 假莫西干成為更普及的當代版本。" },
+    ],
+  },
+  {
+    name: "Faux Hawk",
+    en: "Faux Hawk",
+    aliases: ["faux hawk", "假莫西干", "fohawk"],
+    era: "2000s",
+    tagline: "上班版的莫西干",
+    description: "保留 Mohawk 中央高聳精神、但兩側只是推短而非剃光的男士髮型。比 Mohawk 更日常，可進辦公室。",
+    difficulty: 3,
+    duration: "35 min",
+    example_zh: "想剪 Faux Hawk，比 Mohawk 溫和的版本。",
+    example_en: "Faux hawk — a softer version of mohawk.",
+    evolution: [
+      { year: "2000", label: "概念誕生", body: "為解決 Mohawk 過於激進的問題，設計師發展出 Faux Hawk。" },
+      { year: "2006", label: "Beckham 加持", body: "David Beckham 採用 Faux Hawk 出席公開場合，引爆主流。" },
+      { year: "2010", label: "全球普及", body: "從足球員到上班族，Faux Hawk 成為最廣泛的男性中性造型之一。" },
+      { year: "2018", label: "結合 Fade", body: "Faux Hawk 與漸層結合，發展出更乾淨的當代版本。" },
+      { year: "2024", label: "亞洲在地化", body: "亞洲設計師將 Faux Hawk 柔化，搭配紋理燙與霧面髮蠟。" },
+    ],
+  },
+  {
+    name: "Caesar Cut",
+    en: "Caesar Cut",
+    aliases: ["caesar cut", "凱薩頭"],
+    era: "1990s",
+    tagline: "古羅馬的方正瀏海",
+    description: "瀏海剪成水平直線、整體短而方正的男士髮型。源自模仿古羅馬皇帝凱薩的雕像造型，1990 年代因 George Clooney 大紅。",
+    difficulty: 2,
+    duration: "30 min",
+    example_zh: "想剪 Caesar Cut，瀏海要平的。",
+    example_en: "Caesar cut — straight horizontal bangs.",
+    evolution: [
+      { year: "0050", label: "古羅馬", body: "古羅馬皇帝雕像普遍採用此髮型，成為權威與秩序的視覺象徵。" },
+      { year: "1990", label: "Clooney 復興", body: "George Clooney 在《急診室的春天》採用 Caesar Cut，引爆全球。" },
+      { year: "2000", label: "千禧主流", body: "千禧年初男性最廣泛採用的剪法之一。" },
+      { year: "2010", label: "短暫退場", body: "Undercut 與漸層興起後，Caesar Cut 暫時淡出主流。" },
+      { year: "2022", label: "極簡回潮", body: "極簡風潮讓 Caesar Cut 再次被視為精緻選擇。" },
+    ],
+  },
+  {
+    name: "Ivy League",
+    en: "Ivy League",
+    aliases: ["ivy league", "常春藤頭", "preppy cut"],
+    era: "1950s",
+    tagline: "常春藤的紳士標準",
+    description: "頂部留中等長度、可分側線、整體精緻俐落的男士髮型。1950 年代美國常春藤盟校學生標配，象徵書香與富裕。",
+    difficulty: 2,
+    duration: "30 min",
+    example_zh: "想剪 Ivy League，要能分線那種。",
+    example_en: "Ivy League — long enough to part on the side.",
+    evolution: [
+      { year: "1950", label: "盟校標配", body: "哈佛、耶魯、普林斯頓等常春藤盟校學生標準髮型。" },
+      { year: "1960", label: "肯尼迪時代", body: "JFK 採用類似造型，將 Ivy League 帶入政治與商業精英圈。" },
+      { year: "2000", label: "華爾街延續", body: "投資銀行家、律師等高端職業普遍保留此造型。" },
+      { year: "2015", label: "復古回潮", body: "Mad Men 與其他懷舊作品讓 Ivy League 重新被年輕人發現。" },
+      { year: "2024", label: "亞洲商務", body: "亞洲商務人士將 Ivy League 視為國際化、專業感的代表造型。" },
+    ],
+  },
+  {
+    name: "French Crop",
+    en: "French Crop",
+    aliases: ["french crop", "法式平頭", "法式碎蓋"],
+    era: "2010s",
+    tagline: "歐式精緻的薄瀏海",
+    description: "頂部留中短、瀏海薄透剪向前、兩側漸層的男士髮型。歐洲足球員大量採用，2010 年後成為國際主流。",
+    difficulty: 3,
+    duration: "35 min",
+    example_zh: "想剪 French Crop，瀏海薄薄的。",
+    example_en: "French crop — light, forward-falling bangs.",
+    evolution: [
+      { year: "1990", label: "歐陸起源", body: "法國、義大利男性流行的剪法，瀏海向前剪。" },
+      { year: "2014", label: "足球員引爆", body: "歐洲足球員世界盃造型大量採用 French Crop，全球擴散。" },
+      { year: "2018", label: "亞洲導入", body: "亞洲設計師將 French Crop 與微分碎蓋融合，發展出混血版。" },
+      { year: "2021", label: "TikTok 推廣", body: "TikTok 教學讓 French Crop 成為 Z 世代男性常見選擇。" },
+      { year: "2024", label: "結合 Fade", body: "French Crop 與漸層側邊結合，是當代最普及的男士剪之一。" },
+    ],
+  },
+  {
+    name: "Mullet 狼尾頭",
+    en: "Mullet",
+    aliases: ["mullet", "狼尾", "狼尾頭"],
+    era: "1980s",
+    tagline: "前短後長的爭議美學",
+    description: "前段與兩側剪短、後段保留長度的男士髮型。1980 年代搖滾與勞工階級代表，曾被視為時尚禁區，2020 年後反主流復興。",
+    difficulty: 3,
+    duration: "40 min",
+    example_zh: "想剪 Mullet 狼尾，後面要長一點。",
+    example_en: "Mullet — keep the back longer.",
+    evolution: [
+      { year: "1970", label: "Bowie 起源", body: "David Bowie 的 Ziggy Stardust 造型奠定 Mullet 雛形。" },
+      { year: "1980", label: "全面流行", body: "Patrick Swayze、Billy Ray Cyrus 等明星帶起 Mullet 黃金時期。" },
+      { year: "1995", label: "全面退場", body: "1990 年代中期 Mullet 被視為過時，主流幾乎拋棄此造型。" },
+      { year: "2019", label: "次文化回流", body: "搖滾、滑板、酷兒族群悄悄將 Mullet 重新帶回。" },
+      { year: "2022", label: "TikTok 全面復興", body: "Z 世代將 Mullet 重新詮釋為反主流符號，全球流行。" },
+    ],
+  },
+  {
+    name: "貝克漢頭",
+    en: "Beckham Cut",
+    aliases: ["beckham", "貝克漢", "beckham cut"],
+    era: "2000s",
+    tagline: "千禧年的足球巨星",
+    description: "前刺與漸層結合的男士髮型，因 David Beckham 在 2000 年代多次更換造型而泛指其代表性的多種變體。",
+    difficulty: 4,
+    duration: "45 min",
+    example_zh: "想剪貝克漢頭，前面要立起來。",
+    example_en: "Beckham cut — spiky front, please.",
+    evolution: [
+      { year: "1998", label: "出道造型", body: "Beckham 出道時的中分窗簾造型成為 90 年代尾聲代表。" },
+      { year: "2002", label: "Faux Hawk", body: "Beckham 在 2002 年世界盃採用 Faux Hawk，引爆全球模仿。" },
+      { year: "2005", label: "短刺時期", body: "Beckham 改剪短刺造型，再次帶動足球員模仿潮。" },
+      { year: "2010", label: "辮子時期", body: "Beckham 嘗試短辮子造型，雖然爭議但仍成為時尚話題。" },
+      { year: "2018", label: "回歸經典", body: "Beckham 中年後回歸經典 Slick Back 與 Crew Cut，影響當代商務男士。" },
+    ],
+  },
+  {
+    name: "飛機頭",
+    en: "Quiff Pompadour",
+    aliases: ["飛機頭", "fei ji tou"],
+    era: "1950s",
+    tagline: "東方對 Pompadour 的詮釋",
+    description: "結合 Pompadour 與 Quiff 元素、前峰高聳的東亞男士髮型。1950 年代日本帶起，台灣 1990 年代亦廣泛流行。",
+    difficulty: 4,
+    duration: "45 min",
+    example_zh: "想剪飛機頭，前面要高高的。",
+    example_en: "Asian-style high pompadour with a tall front, please.",
+    evolution: [
+      { year: "1955", label: "日本起源", body: "日本年輕男性模仿 Elvis 並加入東方變化，發展出飛機頭。" },
+      { year: "1980", label: "台灣流行", body: "台灣男性大量採用飛機頭，成為當時年輕世代代表。" },
+      { year: "2000", label: "退場期", body: "千禧年後年輕世代偏好韓系髮型，飛機頭逐漸被視為老氣。" },
+      { year: "2015", label: "復古回潮", body: "復古浪潮讓飛機頭重新被視為復古紳士造型。" },
+      { year: "2024", label: "現代版本", body: "結合霧面髮蠟與漸層側邊，飛機頭演化出更符合當代的版本。" },
+    ],
+  },
+  {
+    name: "Curtain Hair",
+    en: "Curtain Hair",
+    aliases: ["curtain hair", "中分窗簾男版"],
+    era: "1990s",
+    tagline: "Boy Band 的中分柔順",
+    description: "頂部留長並從中央分線、兩側自然垂落的男士髮型。1990 年代 Boy Band 標配，2020 年後 TikTok 復興。",
+    difficulty: 2,
+    duration: "30 min",
+    example_zh: "想剪 Curtain Hair，要 90 年代 Boy Band 那種。",
+    example_en: "Curtain hair — that 90s boy band feel.",
+    evolution: [
+      { year: "1990", label: "Boy Band 起源", body: "Backstreet Boys、N'SYNC 成員的中分造型成為 90 年代標配。" },
+      { year: "1995", label: "亞洲擴散", body: "F4、SMAP 等亞洲偶像團體採用，影響整代亞洲男性。" },
+      { year: "2005", label: "退場期", body: "千禧年後 Curtain Hair 被視為過時，主流髮廊不再提供。" },
+      { year: "2020", label: "TikTok 復興", body: "Y2K 美學讓 Curtain Hair 重新成為 Z 世代男性熱門選擇。" },
+      { year: "2024", label: "韓化版本", body: "韓國男偶像將 Curtain Hair 結合空氣感，成為當代主流。" },
+    ],
+  },
+  {
+    name: "鮑伯頭",
+    en: "Bob Cut",
+    aliases: ["bob", "bob cut", "鮑伯"],
+    era: "1920s",
+    tagline: "現代女性的解放剪",
+    description: "從下巴到耳下長度的女性短髮。1920 年代女性解放運動代表造型，至今仍是最經典女性剪法。",
+    difficulty: 3,
+    duration: "40 min",
+    example_zh: "想剪 Bob，差不多到下巴的長度。",
+    example_en: "Bob cut — about chin length.",
+    evolution: [
+      { year: "1920", label: "女性解放", body: "一戰後女性剪短長髮以象徵獨立，Bob Cut 誕生。" },
+      { year: "1965", label: "Vidal Sassoon 革新", body: "英國設計師 Sassoon 將 Bob Cut 幾何化，掀起第二波熱潮。" },
+      { year: "2000", label: "Lob 衍生", body: "Bob Cut 衍生出更長的 Lob 版本，給予更多選擇。" },
+      { year: "2015", label: "Anna Wintour 永恆", body: "美國 Vogue 主編 Anna Wintour 數十年保留 Bob，成為時尚象徵。" },
+      { year: "2024", label: "韓系細化", body: "韓國設計師將 Bob 加入大量薄層次，發展出輕盈韓式 Bob。" },
+    ],
+  },
+  {
+    name: "Lob 長鮑伯",
+    en: "Long Bob",
+    aliases: ["lob", "long bob", "長鮑伯"],
+    era: "2010s",
+    tagline: "鎖骨上的優雅",
+    description: "比傳統 Bob 更長、約落在鎖骨位置的女性中長髮。比 Bob 更易整理、比長髮更精緻。",
+    difficulty: 2,
+    duration: "35 min",
+    example_zh: "想剪 Lob，到鎖骨的長度。",
+    example_en: "Lob — collarbone length.",
+    evolution: [
+      { year: "2012", label: "概念興起", body: "美國時尚雜誌開始提倡介於 Bob 與長髮間的中長度。" },
+      { year: "2014", label: "明星帶動", body: "Jennifer Lawrence、Taylor Swift 等明星採用 Lob，引爆主流。" },
+      { year: "2018", label: "亞洲普及", body: "亞洲女性大量指定剪 Lob，成為都會職業女性代表。" },
+      { year: "2021", label: "結合燙髮", body: "Lob 與輕度燙髮結合，發展出更立體的版本。" },
+      { year: "2024", label: "韓系層次", body: "韓國設計師加入大量臉框層次，讓 Lob 更修飾臉型。" },
+    ],
+  },
+  {
+    name: "妹妹頭",
+    en: "Childlike Bob",
+    aliases: ["妹妹頭", "鍋蓋頭"],
+    era: "1960s",
+    tagline: "永恆的童趣",
+    description: "齊瀏海、齊長度的女性短髮，整體形似頂著鍋蓋。台灣女性傳統入學標配，至今仍是經典童趣選擇。",
+    difficulty: 2,
+    duration: "30 min",
+    example_zh: "想剪妹妹頭，瀏海齊齊的。",
+    example_en: "Childlike bob with straight bangs.",
+    evolution: [
+      { year: "1960", label: "亞洲標配", body: "1960-1980 年代台日韓兒童女性標準髮型，象徵純樸。" },
+      { year: "1990", label: "髮禁延續", body: "髮禁時期妹妹頭幾乎是台灣女學生唯一選擇。" },
+      { year: "2010", label: "復古化", body: "髮禁解除後妹妹頭從強制變成個人選擇，反而出現懷舊潮。" },
+      { year: "2018", label: "成人版本", body: "都會女性將妹妹頭精緻化，結合空氣瀏海與輕燙。" },
+      { year: "2024", label: "童趣回流", body: "Z 世代女性以妹妹頭表達對童年與簡單美學的憧憬。" },
+    ],
+  },
+  {
+    name: "公主切",
+    en: "Princess Cut",
+    aliases: ["公主切", "princess cut", "姫カット"],
+    era: "2010s",
+    tagline: "二次元跳出的少女感",
+    description: "兩側留下垂至下巴的「臉框髮」、後方保留長度的女性髮型。源自日本動漫角色，2010 年後現實化。",
+    difficulty: 3,
+    duration: "45 min",
+    example_zh: "想剪公主切，臉旁要剪到下巴。",
+    example_en: "Princess cut — face-framing pieces to the chin.",
+    evolution: [
+      { year: "1990", label: "動漫起源", body: "美少女戰士等動漫角色普遍採用此髮型，成為二次元符號。" },
+      { year: "2010", label: "Cosplay 化", body: "動漫展上 Cosplayer 開始將公主切現實化。" },
+      { year: "2018", label: "韓國採用", body: "韓國女偶像 Iz*One 等將公主切現代版帶上舞台。" },
+      { year: "2021", label: "全亞洲流行", body: "台日韓泰越等亞洲國家女性大量嘗試，跨越動漫圈進入主流。" },
+      { year: "2024", label: "風格分支", body: "出現甜系、酷系、暗黑系等不同公主切變體。" },
+    ],
+  },
+  {
+    name: "鎖骨髮",
+    en: "Collarbone Length",
+    aliases: ["鎖骨髮", "collarbone hair"],
+    era: "2010s",
+    tagline: "短不過頸長不過胸",
+    description: "髮尾正好落在鎖骨位置的女性中長髮，介於 Lob 與長髮之間。最易整理、最廣泛的女性日常長度。",
+    difficulty: 2,
+    duration: "30 min",
+    example_zh: "想剪到鎖骨的長度，不要太長也不要太短。",
+    example_en: "Collarbone length, please — not too long, not too short.",
+    evolution: [
+      { year: "2010", label: "概念定型", body: "亞洲女性開始用「鎖骨髮」一詞描述此特定長度。" },
+      { year: "2015", label: "韓劇推廣", body: "韓劇女主角普遍採用鎖骨髮，引爆亞洲女性模仿潮。" },
+      { year: "2018", label: "結合層次", body: "鎖骨髮加入大量層次，發展出韓系精緻版本。" },
+      { year: "2021", label: "結合燙髮", body: "鎖骨髮與木馬卷、雲朵燙結合，成為熱門組合。" },
+      { year: "2024", label: "懶人標配", body: "因易整理且修飾臉型，鎖骨髮成為現代忙碌女性的首選。" },
+    ],
+  },
+  {
+    name: "八字瀏海",
+    en: "Eight Bangs",
+    aliases: ["八字瀏海", "see through bangs"],
+    era: "2010s",
+    tagline: "向兩側微分的修飾",
+    description: "瀏海從中央向兩側微分、形似八字的女性瀏海。修飾臉型效果強，適合多種臉型。",
+    difficulty: 2,
+    duration: "20 min",
+    example_zh: "幫我剪八字瀏海，中間分開那種。",
+    example_en: "Eight-shaped bangs — parted in the middle.",
+    evolution: [
+      { year: "2008", label: "韓劇雛形", body: "韓劇女主角開始採用兩側微分的瀏海剪法。" },
+      { year: "2014", label: "技法定型", body: "韓國設計師將八字瀏海技法標準化，推廣到全亞洲。" },
+      { year: "2018", label: "結合空氣感", body: "八字瀏海與空氣瀏海結合，發展出更輕盈的版本。" },
+      { year: "2021", label: "全球擴散", body: "TikTok 上 #curtainbangs 累積數十億播放，全球女性嘗試。" },
+      { year: "2024", label: "男版出現", body: "韓國男偶像也開始採用八字瀏海，挑戰性別界線。" },
+    ],
+  },
+  {
+    name: "韓系狗啃瀏海",
+    en: "Korean Choppy Bangs",
+    aliases: ["狗啃瀏海", "choppy bangs", "韓式碎瀏海"],
+    era: "2020s",
+    tagline: "刻意凌亂的隨興感",
+    description: "瀏海剪成不規則長短、形似被狗啃過的女性瀏海。2020 年後韓國女偶像帶起，反精緻美學的代表。",
+    difficulty: 3,
+    duration: "20 min",
+    example_zh: "想剪韓系狗啃瀏海，要不規則的那種。",
+    example_en: "Korean choppy bangs — irregular and uneven.",
+    evolution: [
+      { year: "2018", label: "韓國前奏", body: "韓國年輕女性開始嘗試非標準瀏海，反抗精緻美學。" },
+      { year: "2020", label: "女偶像引爆", body: "Itzy、aespa 等女偶像採用狗啃瀏海，全亞洲女性跟進。" },
+      { year: "2022", label: "TikTok 擴散", body: "教學影片在 TikTok 累積大量播放，西方女性也開始嘗試。" },
+      { year: "2023", label: "技法成熟", body: "韓國美髮業界開發專用點剪技術，讓狗啃瀏海更立體。" },
+      { year: "2024", label: "結合長度", body: "與短髮、Hush Cut、姬髮式結合，發展出多種混血版本。" },
+    ],
+  },
+  {
+    name: "法式瀏海",
+    en: "French Bangs",
+    aliases: ["法式瀏海", "birkin bangs"],
+    era: "1960s",
+    tagline: "微凌亂的法式情調",
+    description: "瀏海薄、長度落在眉毛上方、自然分開的女性瀏海。源自 1960 年代 Jane Birkin，2020 年後復興。",
+    difficulty: 2,
+    duration: "20 min",
+    example_zh: "想剪法式瀏海，要 Birkin 那種感。",
+    example_en: "French bangs — that Jane Birkin look.",
+    evolution: [
+      { year: "1965", label: "Birkin 起源", body: "Jane Birkin 的薄瀏海成為法式女性代表造型。" },
+      { year: "1990", label: "短暫退場", body: "1990 年代厚瀏海流行，法式瀏海一度被遺忘。" },
+      { year: "2018", label: "Vogue 復興", body: "Vogue 雜誌專文推廣法式瀏海，引發新一波模仿。" },
+      { year: "2021", label: "TikTok 普及", body: "TikTok 教學讓法式瀏海從高端時尚走入日常。" },
+      { year: "2024", label: "結合中長髮", body: "法式瀏海與 Lob、鎖骨髮結合，成為當代主流組合。" },
+    ],
+  },
+  {
+    name: "蛋捲頭",
+    en: "Egg Roll Cut",
+    aliases: ["蛋捲頭", "egg roll"],
+    era: "2010s",
+    tagline: "向內捲入的甜美",
+    description: "髮尾向內捲、形似蛋捲的女性中長髮。2010 年後台日女性流行，是最普及的甜美風格。",
+    difficulty: 3,
+    duration: "60 min",
+    example_zh: "想燙蛋捲頭，髮尾要向內捲。",
+    example_en: "Egg roll cut — ends curling inward.",
+    evolution: [
+      { year: "2010", label: "日本起源", body: "日本沙龍雜誌提出蛋捲燙概念，標榜甜美少女感。" },
+      { year: "2015", label: "台灣普及", body: "台灣女性大量指定燙蛋捲頭，成為都會年輕女性標配。" },
+      { year: "2018", label: "韓化版本", body: "韓國設計師將蛋捲燙與層次結合，發展出更立體版本。" },
+      { year: "2021", label: "技法精緻化", body: "出現大蛋捲、小蛋捲、單側蛋捲等不同細分版本。" },
+      { year: "2024", label: "結合空氣感", body: "蛋捲頭結合空氣瀏海，成為當代女性燙髮主流組合之一。" },
+    ],
+  },
+  {
+    name: "Bowl Cut",
+    en: "Bowl Cut",
+    aliases: ["bowl cut", "鍋蓋頭", "現代妹妹頭"],
+    era: "2020s",
+    tagline: "Z 世代的反主流選擇",
+    description: "整體呈現倒蓋鍋型、四周齊長的中性髮型。傳統妹妹頭的 Z 世代反主流復興版。",
+    difficulty: 3,
+    duration: "35 min",
+    example_zh: "想剪 Bowl Cut，整體要圓圓平平的。",
+    example_en: "Bowl cut — round and flat all around.",
+    evolution: [
+      { year: "1960", label: "兒童標配", body: "1960-1980 年代全球兒童標配髮型，廉價且易整理。" },
+      { year: "1990", label: "嘲笑對象", body: "Bowl Cut 在 1990 年代被視為老土，成為流行文化的玩笑。" },
+      { year: "2015", label: "次文化採用", body: "K-pop、滑板、酷兒族群開始將 Bowl Cut 重新詮釋。" },
+      { year: "2021", label: "TikTok 復興", body: "Z 世代以 Bowl Cut 表達反精緻、反性別二元的態度。" },
+      { year: "2024", label: "性別擴張", body: "Bowl Cut 從原本以兒童為主擴散到所有年齡與性別。" },
+    ],
+  },
+  {
+    name: "層次鮑伯",
+    en: "Layered Bob",
+    aliases: ["layered bob", "層次鮑伯", "層次bob", "層次鮑伯頭"],
+    era: "2010s",
+    tagline: "傳統鮑伯的呼吸感",
+    description: "在傳統 Bob 基礎上加入大量薄層次的女性短髮。比傳統 Bob 更輕盈、更易造型、更修飾臉型。",
+    difficulty: 3,
+    duration: "45 min",
+    example_zh: "想剪層次鮑伯，要有層次感的。",
+    example_en: "Layered bob — with plenty of texture.",
+    evolution: [
+      { year: "1965", label: "Sassoon 母型", body: "Vidal Sassoon 將 Bob 幾何化的同時也開始實驗層次版本。" },
+      { year: "2010", label: "韓劇推廣", body: "韓劇女主角採用層次鮑伯，引爆亞洲女性模仿。" },
+      { year: "2015", label: "結合層次燙", body: "層次鮑伯與輕度燙髮結合，發展出更立體版本。" },
+      { year: "2020", label: "TikTok 復興", body: "TikTok 上的「Layered Bob 教學」累積大量播放，西方女性也跟進。" },
+      { year: "2024", label: "韓系細化", body: "韓國設計師加入大量臉框層次，讓層次鮑伯更修飾臉型。" },
+    ],
+  },
+  {
+    name: "水母頭",
+    en: "Jellyfish Cut",
+    aliases: ["jellyfish cut", "水母頭", "jellyfish haircut"],
+    era: "2022",
+    tagline: "上下分層的視覺戲劇",
+    description: "上層極短、下層極長，中間幾乎無過渡的女性髮型。形似水母的觸手，2022 年 TikTok 由日韓設計師帶起。",
+    difficulty: 5,
+    duration: "60 min",
+    example_zh: "想剪水母頭，上面短下面長那種。",
+    example_en: "Jellyfish cut — short on top, long underneath.",
+    evolution: [
+      { year: "2018", label: "日本前奏", body: "日本沙龍開始實驗極端層次反差的剪法，但屬小眾。" },
+      { year: "2021", label: "Wolf Cut 暖場", body: "Wolf Cut 流行讓觀眾接受了上下分層的視覺結構。" },
+      { year: "2022", label: "TikTok 命名", body: "TikTok 創作者首次以「jellyfish」命名，迅速被全球採用。" },
+      { year: "2023", label: "韓國採用", body: "韓國女偶像將水母頭帶上舞台，跨越亞文化進入主流。" },
+      { year: "2024", label: "風格分化", body: "出現甜系、酷系、暗黑系等不同水母頭變體版本。" },
+    ],
+  },
+  {
+    name: "高層次長短髮",
+    en: "Heavy Layered Cut",
+    aliases: ["heavy layers", "高層次", "高層次長短髮", "shaggy layers"],
+    era: "2010s",
+    tagline: "層層堆疊的飄逸感",
+    description: "整體有大量薄層次、從短到長落差明顯的女性中長髮。韓系常見，跳脫單一長度的單調感。",
+    difficulty: 4,
+    duration: "50 min",
+    example_zh: "想剪高層次的長短髮，要層次明顯一點。",
+    example_en: "Heavy layered cut — make the layers obvious.",
+    evolution: [
+      { year: "1970", label: "Shag 母型", body: "1970 年代 Shag 髮型為高層次剪法的母型，Jane Fonda 帶起。" },
+      { year: "2010", label: "韓國精緻化", body: "韓國設計師將層次剪法精緻化，發展出符合東方毛流的版本。" },
+      { year: "2015", label: "韓劇推廣", body: "韓劇女主角採用高層次長短髮，引爆亞洲女性模仿潮。" },
+      { year: "2020", label: "結合燙髮", body: "高層次長短髮與雲朵燙、木馬卷結合，成為熱門組合。" },
+      { year: "2024", label: "技法分化", body: "出現臉框層次、頂部層次、髮尾層次等不同細分版本。" },
+    ],
+  },
+  {
+    name: "羊毛卷",
+    en: "Wool Curl",
+    aliases: ["羊毛卷", "wool curl", "woolly perm"],
+    era: "2010s",
+    tagline: "細密蓬鬆的綿羊感",
+    description: "燙成細密小卷、整體蓬鬆的女性燙髮。2010 年後韓國帶起，成為亞洲女性燙髮主流之一。",
+    difficulty: 4,
+    duration: "150 min",
+    example_zh: "想燙羊毛卷，要細捲蓬鬆的。",
+    example_en: "Wool curl — tight, fluffy curls.",
+    evolution: [
+      { year: "2010", label: "韓國起源", body: "韓國美髮業界開發細捲燙法，標榜蓬鬆童趣感。" },
+      { year: "2015", label: "亞洲擴散", body: "羊毛卷從韓國擴散到台日，成為都會女性熱門選擇。" },
+      { year: "2018", label: "結合短髮", body: "羊毛卷與 Bob、Lob 結合，發展出短版羊毛卷。" },
+      { year: "2021", label: "男版出現", body: "韓國男偶像將羊毛卷男版化，引發男性嘗試。" },
+      { year: "2024", label: "技法分化", body: "出現大羊毛、小羊毛、不規則羊毛等不同版本。" },
+    ],
+  },
+  {
+    name: "雲朵燙",
+    en: "Cloud Perm",
+    aliases: ["雲朵燙", "cloud perm"],
+    era: "2020s",
+    tagline: "蓬鬆如雲的輕盈",
+    description: "頂部與兩側做出大波浪、整體蓬鬆如雲的女性燙髮。2020 年後韓國帶起，比羊毛卷更柔和。",
+    difficulty: 4,
+    duration: "120 min",
+    example_zh: "想燙雲朵燙，要那種蓬蓬的感覺。",
+    example_en: "Cloud perm — cloud-like volume.",
+    evolution: [
+      { year: "2018", label: "韓國前奏", body: "韓國設計師開始嘗試比羊毛卷更柔和的燙髮版本。" },
+      { year: "2020", label: "命名定型", body: "韓國美髮業界正式以「구름펌（雲朵燙）」命名此技法。" },
+      { year: "2022", label: "亞洲擴散", body: "台日泰越女性大量指定燙雲朵燙，跨越韓國邊界。" },
+      { year: "2023", label: "結合長度", body: "雲朵燙與 Lob、鎖骨髮結合，成為當代主流燙髮選擇。" },
+      { year: "2024", label: "技法精緻化", body: "出現只在頂部燙、只在兩側燙等局部燙法，更易日常造型。" },
+    ],
+  },
+  {
+    name: "木馬卷",
+    en: "Carousel Curl",
+    aliases: ["木馬卷", "carousel curl"],
+    era: "2020s",
+    tagline: "童話般的小波浪",
+    description: "全頭中等大小波浪、形似旋轉木馬的女性燙髮。2020 年後韓國帶起，是最甜美的當代燙髮選擇。",
+    difficulty: 4,
+    duration: "130 min",
+    example_zh: "想燙木馬卷，要那種小小的波浪。",
+    example_en: "Carousel curl — small, sweet waves.",
+    evolution: [
+      { year: "2018", label: "韓國概念", body: "韓國美髮業界提出「木馬燙」概念，主打童話甜美風。" },
+      { year: "2020", label: "亞洲擴散", body: "從韓國擴散到台日，成為甜系女性熱門選擇。" },
+      { year: "2022", label: "結合長度", body: "木馬卷與不同長度結合，從短到長都有對應版本。" },
+      { year: "2023", label: "男版出現", body: "部分韓國男偶像嘗試輕度木馬卷，挑戰男性燙髮邊界。" },
+      { year: "2024", label: "技法分化", body: "出現大木馬、小木馬、不規則木馬等不同細分版本。" },
+    ],
+  },
+  {
+    name: "玉米鬚",
+    en: "Crimps",
+    aliases: ["玉米鬚", "crimps", "玉米燙"],
+    era: "1980s",
+    tagline: "極細的反差質感",
+    description: "用特殊燙夾將局部頭髮燙成極細波浪、形似玉米鬚的造型。1980 年代起，2010 年後因蓬鬆需求重回主流。",
+    difficulty: 3,
+    duration: "30 min",
+    example_zh: "想燙玉米鬚，幫我頂部弄一點。",
+    example_en: "Crimps on top, please.",
+    evolution: [
+      { year: "1980", label: "嘻哈文化", body: "1980 年代嘻哈與龐克文化採用玉米鬚作為視覺標誌。" },
+      { year: "1995", label: "全面退場", body: "1990 年代後期玉米鬚被視為過時，主流幾乎不再提供。" },
+      { year: "2015", label: "蓬鬆需求", body: "亞洲女性追求頂部蓬鬆，玉米鬚作為打底技法重新流行。" },
+      { year: "2018", label: "局部使用", body: "現代多用於頂部局部，作為其他造型的蓬鬆基底。" },
+      { year: "2024", label: "全頭復興", body: "復古浪潮讓全頭玉米鬚再次出現在時尚圈。" },
+    ],
+  },
+  {
+    name: "法拉頭",
+    en: "Farrah Fawcett Wave",
+    aliases: ["法拉頭", "farrah", "天使頭"],
+    era: "1970s",
+    tagline: "1970 年代的天使光暈",
+    description: "頂部蓬鬆、兩側向後波浪的女性燙髮。1970 年代美國女星 Farrah Fawcett 帶起，是美式甜美風代表。",
+    difficulty: 4,
+    duration: "120 min",
+    example_zh: "想燙法拉頭，要 70 年代美式甜美感。",
+    example_en: "Farrah Fawcett wave — 70s American glam.",
+    evolution: [
+      { year: "1976", label: "霹靂嬌娃", body: "Farrah Fawcett 在《霹靂嬌娃》造型成為 70 年代代表。" },
+      { year: "1980", label: "全面流行", body: "全美女性大量模仿法拉頭，成為一代標誌。" },
+      { year: "1995", label: "退場期", body: "1990 年代後期法拉頭被視為過時，主流幾乎不再提供。" },
+      { year: "2018", label: "復古回潮", body: "Y2K 美學帶動 70-80 年代復興，法拉頭重新進入視野。" },
+      { year: "2024", label: "TikTok 復興", body: "TikTok 教學影片讓法拉頭再次成為年輕女性嘗試的選擇。" },
+    ],
+  },
+  {
+    name: "海浪卷",
+    en: "Beach Wave",
+    aliases: ["海浪卷", "beach wave", "海灘卷"],
+    era: "2010s",
+    tagline: "海邊度假的隨興",
+    description: "整體大波浪、形似海邊度假女孩的女性燙髮。2010 年後因 Instagram 度假美學而全球流行。",
+    difficulty: 3,
+    duration: "100 min",
+    example_zh: "想燙海浪卷，要那種剛從海邊回來的感覺。",
+    example_en: "Beach wave — like I just came back from the beach.",
+    evolution: [
+      { year: "2010", label: "Instagram 起源", body: "Instagram 度假美學興起，海浪卷成為視覺代表。" },
+      { year: "2014", label: "明星帶動", body: "Gigi Hadid、Kendall Jenner 等模特兒採用海浪卷，引爆主流。" },
+      { year: "2018", label: "亞洲在地化", body: "亞洲設計師將海浪卷柔化，發展出更貼合東方毛流的版本。" },
+      { year: "2021", label: "結合長度", body: "海浪卷從原本以長髮為主擴散到中長與短髮版本。" },
+      { year: "2024", label: "技法精緻化", body: "出現大波浪、小波浪、不規則波浪等不同細分版本。" },
+    ],
+  },
+  {
+    name: "公主卷",
+    en: "Princess Curl",
+    aliases: ["公主卷", "princess curl"],
+    era: "1980s",
+    tagline: "夢幻的螺旋大卷",
+    description: "全頭螺旋大卷、整體華麗夢幻的女性燙髮。1980 年代亞洲流行，2020 年後因 K-pop 與韓劇復興。",
+    difficulty: 4,
+    duration: "150 min",
+    example_zh: "想燙公主卷，要大卷夢幻的那種。",
+    example_en: "Princess curl — big, dreamy spirals.",
+    evolution: [
+      { year: "1985", label: "亞洲流行", body: "1980 年代亞洲女性大量燙公主卷，是當時最華麗的選擇。" },
+      { year: "1995", label: "退場期", body: "1990 年代直髮回潮，公主卷被視為老氣，主流退場。" },
+      { year: "2018", label: "Y2K 暖場", body: "Y2K 美學興起，公主卷再次被視為復古優雅的選擇。" },
+      { year: "2021", label: "K-pop 復興", body: "韓國女偶像在舞台造型採用公主卷，引發年輕女性模仿。" },
+      { year: "2024", label: "現代版本", body: "結合輕量化技法，公主卷比 1980 年代版本更柔和自然。" },
+    ],
+  },
+  {
+    name: "數位燙",
+    en: "Digital Perm",
+    aliases: ["數位燙", "digital perm", "digi perm"],
+    era: "2000s",
+    tagline: "熱燙時代的精準控制",
+    description: "使用數位溫控設備進行的燙髮，能精確控制溫度與時間，產生比傳統冷燙更持久自然的卷度。",
+    difficulty: 4,
+    duration: "180 min",
+    example_zh: "想燙數位燙，要那種捲度持久的。",
+    example_en: "Digital perm, please — long-lasting curls.",
+    evolution: [
+      { year: "2000", label: "日本發明", body: "日本美髮業界開發數位燙設備，將傳統熱燙精準化。" },
+      { year: "2005", label: "亞洲擴散", body: "數位燙從日本擴散到韓國、台灣，成為高端燙髮代表。" },
+      { year: "2010", label: "技法成熟", body: "數位燙與護髮技法結合，降低對髮質的傷害。" },
+      { year: "2018", label: "全球普及", body: "美國、歐洲沙龍開始引進數位燙設備，跨越亞洲邊界。" },
+      { year: "2024", label: "結合短髮", body: "數位燙從以長髮為主擴散到中長與短髮版本。" },
+    ],
+  },
+  {
+    name: "髮根燙",
+    en: "Root Perm",
+    aliases: ["髮根燙", "root perm", "頭頂燙"],
+    era: "2010s",
+    tagline: "頭頂的隱形蓬鬆",
+    description: "只在髮根做小卷以增加蓬鬆度的女性局部燙髮。2010 年後成為亞洲女性蓬鬆需求的標配技法。",
+    difficulty: 3,
+    duration: "60 min",
+    example_zh: "想燙髮根燙，幫我頂部蓬一點。",
+    example_en: "Root perm — give my crown more volume.",
+    evolution: [
+      { year: "2010", label: "韓國起源", body: "韓國美髮業界開發專為頂部蓬鬆需求的局部燙髮。" },
+      { year: "2015", label: "亞洲擴散", body: "髮根燙從韓國擴散到台日，成為都會女性熱門選擇。" },
+      { year: "2018", label: "結合長度", body: "髮根燙從以中長髮為主擴散到短髮與長髮版本。" },
+      { year: "2021", label: "男版出現", body: "亞洲男性開始嘗試髮根燙，作為造型增量基底。" },
+      { year: "2024", label: "技法精緻化", body: "出現只在頂部、只在兩側等更細分的局部燙髮版本。" },
+    ],
+  },
+  {
+    name: "紋理燙",
+    en: "Texture Perm",
+    aliases: ["紋理燙", "texture perm"],
+    era: "2020s",
+    tagline: "看起來沒燙的燙髮",
+    description: "極輕度的燙髮，僅增加自然紋理而非明顯卷度。2020 年後因日常自然感需求而流行。",
+    difficulty: 3,
+    duration: "90 min",
+    example_zh: "想燙紋理燙，要看不太出來燙過的那種。",
+    example_en: "Texture perm — natural texture, nothing too obvious.",
+    evolution: [
+      { year: "2018", label: "日本前奏", body: "日本沙龍開始提倡「不像燙過的燙髮」，主打自然感。" },
+      { year: "2020", label: "韓國採用", body: "韓國美髮業界將紋理燙標準化，推廣至 K-pop 男偶像。" },
+      { year: "2022", label: "亞洲擴散", body: "從韓日擴散到台泰越，成為男女皆可的當代燙髮選擇。" },
+      { year: "2023", label: "男性主流", body: "紋理燙成為亞洲男性燙髮主流，跨越傳統男性不燙髮的界線。" },
+      { year: "2024", label: "技法分化", body: "出現偏直、偏卷、偏蓬鬆等不同版本，適應不同需求。" },
+    ],
+  },
+  {
+    name: "Balayage 巴黎染",
+    en: "Balayage",
+    aliases: ["balayage", "巴黎染", "手繪染"],
+    era: "2010s",
+    tagline: "手繪般的自然漸層",
+    description: "用手繪方式將染膏自然刷在頭髮上、創造漸層效果的女性染髮。源自法國，2010 年後全球流行。",
+    difficulty: 5,
+    duration: "180 min",
+    example_zh: "想染 Balayage，要那種自然漸層。",
+    example_en: "Balayage — natural, painted-on highlights.",
+    evolution: [
+      { year: "1970", label: "法國起源", body: "法國設計師開發手繪染髮技法，當時稱為 balayage。" },
+      { year: "2010", label: "Instagram 普及", body: "Instagram 上的女性開始分享 Balayage 成品照，引爆全球流行。" },
+      { year: "2015", label: "亞洲在地化", body: "亞洲設計師將 Balayage 與東方髮色結合，發展出符合亞洲膚色的版本。" },
+      { year: "2020", label: "技法精緻化", body: "Balayage 與 Foilyage、Babylights 等技法結合，創造更細緻的漸層。" },
+      { year: "2024", label: "男版出現", body: "男性也開始嘗試 Balayage，跳脫傳統男性單色染髮的限制。" },
+    ],
+  },
+  {
+    name: "挑染",
+    en: "Highlights",
+    aliases: ["highlights", "挑染"],
+    era: "1990s",
+    tagline: "策略性的亮點",
+    description: "在頭髮中挑選部分染成淺色、創造立體感的染髮。1990 年代美國流行，至今仍是最普及的染髮技法之一。",
+    difficulty: 4,
+    duration: "150 min",
+    example_zh: "想做挑染，幫我挑幾束亮一點的。",
+    example_en: "Highlights — pick out a few lighter strands.",
+    evolution: [
+      { year: "1990", label: "美國起源", body: "Jennifer Aniston 等明星在 1990 年代採用挑染，引爆全球流行。" },
+      { year: "2000", label: "亞洲擴散", body: "挑染從美國擴散到亞洲，成為都會女性最廣泛的染髮選擇。" },
+      { year: "2010", label: "Balayage 衝擊", body: "Balayage 興起後挑染暫時退場，但因技法穩定仍保留主流地位。" },
+      { year: "2018", label: "回潮", body: "Y2K 美學讓挑染再次被視為復古時尚的選擇。" },
+      { year: "2024", label: "結合 Balayage", body: "現代沙龍將挑染與 Balayage 結合，創造混血技法。" },
+    ],
+  },
+  {
+    name: "漸層染",
+    en: "Ombré",
+    aliases: ["ombre", "ombré", "漸層染"],
+    era: "2010s",
+    tagline: "從深到淺的視覺戲劇",
+    description: "髮根保留原色、髮尾染成淺色、創造明顯漸層的染髮。2010 年後 Instagram 上的代表染髮選擇。",
+    difficulty: 4,
+    duration: "180 min",
+    example_zh: "想染漸層，髮尾要淺色那種。",
+    example_en: "Ombré — darker roots, lighter ends.",
+    evolution: [
+      { year: "2010", label: "Instagram 起源", body: "Instagram 上的女性開始分享漸層染成品，引爆流行。" },
+      { year: "2014", label: "明星帶動", body: "Lauren Conrad、Khloé Kardashian 等明星採用漸層染，全球擴散。" },
+      { year: "2018", label: "Balayage 衝擊", body: "Balayage 興起後漸層染從主流轉為次選，但仍有特定客群偏好。" },
+      { year: "2021", label: "彩色漸層", body: "出現粉紅、藍、紫等彩色漸層染，跳脫傳統淺色限制。" },
+      { year: "2024", label: "韓系改良", body: "韓國設計師將漸層染輕量化，創造更自然的當代版本。" },
+    ],
+  },
+  {
+    name: "E-girl 二次元染",
+    en: "E-girl Hair",
+    aliases: ["e-girl", "二次元染", "egirl"],
+    era: "2020s",
+    tagline: "TikTok 世代的視覺挑釁",
+    description: "結合中分、瀏海單側挑染、彩色挑染的女性造型。2020 年後 TikTok E-girl 文化的視覺核心。",
+    difficulty: 5,
+    duration: "240 min",
+    example_zh: "想做 E-girl 那種，瀏海要單側染色。",
+    example_en: "E-girl style — colored streak in the front bangs.",
+    evolution: [
+      { year: "2018", label: "TikTok 起源", body: "TikTok 平台興起，E-girl 文化開始醞釀，主打反主流視覺。" },
+      { year: "2020", label: "全面流行", body: "疫情期間 E-girl 染髮在 TikTok 累積數十億播放，全球擴散。" },
+      { year: "2022", label: "亞洲採用", body: "亞洲女性開始嘗試 E-girl 染，但通常採用較柔和的色彩搭配。" },
+      { year: "2023", label: "技法分化", body: "出現甜系、暗黑系、Y2K 系等不同 E-girl 染色變體。" },
+      { year: "2024", label: "男版出現", body: "男性也開始嘗試 E-girl 染，挑戰傳統性別染髮界線。" },
+    ],
+  },
+  {
+    name: "隱藏染",
+    en: "Hidden Color",
+    aliases: ["hidden color", "隱藏染", "內層染"],
+    era: "2010s",
+    tagline: "藏在內層的彩色秘密",
+    description: "只在頭髮內層染色、外層保留原色的染髮。2010 年後因「上班可遮、下班可放」的彈性而流行。",
+    difficulty: 4,
+    duration: "150 min",
+    example_zh: "想做隱藏染，要藏在內層的那種。",
+    example_en: "Hidden color — colored underneath, natural on top.",
+    evolution: [
+      { year: "2010", label: "概念誕生", body: "美國設計師提出「Hidden Color」概念，標榜可隱可顯的彈性。" },
+      { year: "2015", label: "亞洲擴散", body: "隱藏染從美國擴散到亞洲，特別受職業女性歡迎。" },
+      { year: "2018", label: "彩色普及", body: "粉紅、藍、紫、綠等彩色隱藏染快速擴散，挑戰染髮邊界。" },
+      { year: "2021", label: "TikTok 推廣", body: "TikTok 上的「翻髮揭密」短片讓隱藏染再次走紅。" },
+      { year: "2024", label: "結合燙髮", body: "隱藏染與雲朵燙、木馬卷結合，成為當代女性熱門組合。" },
+    ],
+  },
+  {
+    name: "髒辮",
+    en: "Dreadlocks",
+    aliases: ["dreadlocks", "dreads", "髒辮", "雷鬼辮"],
+    era: "古老",
+    tagline: "牙買加的精神圖騰",
+    description: "將頭髮纏繞糾結成繩狀的髮型。源自非洲與印度古文明，1970 年代因雷鬼樂與 Bob Marley 全球擴散。",
+    difficulty: 5,
+    duration: "480 min",
+    example_zh: "想接髒辮，要全頭那種。",
+    example_en: "Full head of dreadlocks, please.",
+    evolution: [
+      { year: "0500", label: "古文明", body: "古印度、古埃及、古希臘均有髒辮造型紀錄，象徵靈性與威望。" },
+      { year: "1930", label: "拉斯特法里", body: "牙買加拉斯特法里教派採用髒辮作為宗教象徵。" },
+      { year: "1975", label: "Bob Marley", body: "Bob Marley 的全球巡演讓髒辮從亞文化擴散到主流。" },
+      { year: "2000", label: "時尚採用", body: "高端時尚秀與好萊塢電影開始採用髒辮，但引發文化挪用爭議。" },
+      { year: "2024", label: "尊重風潮", body: "現代髮廊在提供髒辮服務時更注重對非裔文化的尊重。" },
+    ],
+  },
+  {
+    name: "阿福羅頭",
+    en: "Afro",
+    aliases: ["afro", "阿福羅", "爆炸頭"],
+    era: "1960s",
+    tagline: "黑人解放的視覺宣言",
+    description: "將天然捲髮維持其自然蓬鬆狀態的非裔髮型。1960 年代成為黑人民權運動的視覺象徵。",
+    difficulty: 3,
+    duration: "60 min",
+    example_zh: "想要 Afro 造型，要那種大蓬蓬的。",
+    example_en: "Afro — big and full, please.",
+    evolution: [
+      { year: "1960", label: "民權運動", body: "Afro 成為美國黑人民權運動的視覺象徵，拒絕被同化。" },
+      { year: "1970", label: "Funk 黃金時代", body: "James Brown、Jackson 5 等音樂人將 Afro 帶入流行文化頂端。" },
+      { year: "1990", label: "退場期", body: "1990 年代髒辮、編髮等其他造型興起，Afro 暫時淡出。" },
+      { year: "2010", label: "自然髮運動", body: "「Natural Hair Movement」興起，Afro 重新被視為文化驕傲。" },
+      { year: "2024", label: "全球尊重", body: "現代髮廊與品牌更注重對 Afro 髮質的專業服務與尊重。" },
+    ],
+  },
+  {
+    name: "編髮造型",
+    en: "Braids",
+    aliases: ["braids", "編髮", "辮子"],
+    era: "古老",
+    tagline: "跨文化的編織傳統",
+    description: "將頭髮編織成各種形狀的髮型統稱，包含 Box Braids、Cornrows、French Braid 等。源自全球多個古文明。",
+    difficulty: 4,
+    duration: "300 min",
+    example_zh: "想編 Box Braids，要全頭的。",
+    example_en: "Box braids, full head, please.",
+    evolution: [
+      { year: "3000", label: "古埃及", body: "古埃及壁畫中已可見複雜編髮造型，象徵地位與美。" },
+      { year: "1900", label: "非裔傳統", body: "非裔美國人保留編髮傳統，作為文化認同的延續。" },
+      { year: "1970", label: "全球擴散", body: "Bo Derek 在電影《10》中採用 Cornrows 後引發白人模仿，引發爭議。" },
+      { year: "2010", label: "Instagram 復興", body: "Beyoncé、Rihanna 等明星將編髮帶入主流時尚。" },
+      { year: "2024", label: "文化尊重", body: "現代髮廊在提供編髮服務時更注重對非裔起源的認可與尊重。" },
+    ],
+  },
+  {
+    name: "雷鬼頭",
+    en: "Reggae Hair",
+    aliases: ["reggae", "雷鬼頭"],
+    era: "1970s",
+    tagline: "雷鬼音樂的靈魂",
+    description: "結合髒辮與彩色頭巾的造型統稱，源自牙買加雷鬼音樂文化。Bob Marley 為其代表人物。",
+    difficulty: 5,
+    duration: "360 min",
+    example_zh: "想做雷鬼頭，要 Bob Marley 那種感。",
+    example_en: "Reggae hair — that Bob Marley feel.",
+    evolution: [
+      { year: "1930", label: "拉斯特法里", body: "牙買加拉斯特法里教派採用髒辮作為宗教象徵，為雷鬼頭母型。" },
+      { year: "1970", label: "Bob Marley", body: "Bob Marley 全球巡演將雷鬼頭推向國際。" },
+      { year: "1990", label: "全球擴散", body: "雷鬼頭從牙買加擴散到全球，但通常脫離宗教意涵。" },
+      { year: "2010", label: "次文化採用", body: "搖滾、龐克等次文化採用雷鬼頭，作為反主流符號。" },
+      { year: "2024", label: "文化尊重", body: "現代提供雷鬼頭服務時更注重對牙買加文化起源的認識。" },
+    ],
+  },
+];
+
+const SUGGESTED = [
+  '微分碎蓋', '三七側背', '萊斯利卷', '美式前刺',
+  '羊毛卷', '韓系空氣瀏海', '法式平頭', '貝克漢頭',
+  'Buzz Cut', 'Crew Cut', 'Mullet', 'Curtain Hair',
+  '日系狼剪', '泡麵頭', '飛機頭', '中分油頭',
+];
+
+function ASearchPanel({ onSelect }) {
+  const [q, setQ] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [result, setResult] = React.useState(null);
+  const [error, setError] = React.useState(null);
+  const [activeYear, setActiveYear] = React.useState(0);
+  const [favTick, setFavTick] = React.useState(0);
+  const [videos, setVideos] = React.useState(null);
+  const [loadingVideos, setLoadingVideos] = React.useState(false);
+  const [history, setHistory] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem('cuttingroom_search_history') || '[]'); } catch { return []; }
+  });
+
+  const cacheRef = React.useRef({});
+  const composingRef = React.useRef(false); // IME 防護：打中文時不要提前觸發搜尋
+
+  const lookup = async (name) => {
+    if (!name.trim()) return;
+    console.log('[search] lookup:', name);
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    setActiveYear(0);
+    setVideos(null);
+
+    // 圖片抓取已移除（DuckDuckGo CORS 在大多數環境會失敗，造成困擾）
+
+    // check seed first
+    const seed = SEED.find(h => h.name === name.trim() || h.en?.toLowerCase() === name.trim().toLowerCase());
+    if (seed) {
+      setResult({
+        name: seed.name, en: seed.en, era: seed.era,
+        tagline: seed.tagline, description: seed.description,
+        evolution: seed.evolution,
+        difficulty: seed.difficulty, duration: seed.duration,
+        example_zh: seed.example_zh, example_en: seed.example_en,
+        source: 'seed',
+        heroSvg: buildSilhouette(classifyStyle(seed.name, seed.en)),
+      });
+      setLoading(false);
+      pushHistory(name.trim());
+      return;
+    }
+
+    // check expanded LIBRARY
+    const qLower = name.trim().toLowerCase();
+    const qTrim = name.trim();
+    // 階段 1：精確匹配（name / en / aliases 完全相等）
+    let lib = LIBRARY.find(h => {
+      if (h.name === qTrim) return true;
+      if (h.en.toLowerCase() === qLower) return true;
+      if (h.aliases && h.aliases.some(a => a.toLowerCase() === qLower)) return true;
+      return false;
+    });
+    // 階段 2：模糊匹配（包含關係）
+    if (!lib) {
+      lib = LIBRARY.find(h => {
+        if (h.name.includes(qTrim) || qTrim.includes(h.name)) return true;
+        if (h.en.toLowerCase().includes(qLower) || qLower.includes(h.en.toLowerCase())) return true;
+        if (h.aliases && h.aliases.some(a => {
+          const al = a.toLowerCase();
+          return al.includes(qLower) || qLower.includes(al);
+        })) return true;
+        return false;
+      });
+    }
+    if (lib) {
+      setResult({
+        name: lib.name, en: lib.en, era: lib.era,
+        tagline: lib.tagline, description: lib.description,
+        evolution: lib.evolution,
+        difficulty: lib.difficulty, duration: lib.duration,
+        example_zh: lib.example_zh, example_en: lib.example_en,
+        source: 'library',
+        heroSvg: buildSilhouette(classifyStyle(lib.name, lib.en)),
+      });
+      setLoading(false);
+      pushHistory(name.trim());
+      return;
+    }
+
+    // cache
+    if (cacheRef.current[name]) {
+      setResult(cacheRef.current[name]);
+      setLoading(false);
+      pushHistory(name.trim());
+      return;
+    }
+
+    const prompt = `你是美髮歷史學家。請以 JSON 回答關於髮型「${name}」的資料。
+
+請使用以下嚴格格式 (只回傳 JSON,不要 markdown):
+{
+  "name": "中文名稱",
+  "en": "ENGLISH NAME (UPPERCASE)",
+  "era": "代表年代如 1950s 或 2020s",
+  "tagline": "一句中文短語 (10字內)",
+  "description": "2-3 句中文介紹起源、特徵、流行區域",
+  "difficulty": 1-5 整數,
+  "duration": "預估剪髮時間如 45 min",
+  "evolution": [
+    {"year": "年份", "label": "事件名稱(8字內)", "body": "1-2 句中文說明"},
+    ... 共 5 個關鍵時間節點,從早到晚
+  ]
+}
+
+如果你不確定該髮型存在,請仍然依照格式給出最合理的推測,不要回傳錯誤訊息。`;
+
+    // Build a deterministic fallback so the search always returns *something*,
+    // even on real devices where window.claude.complete is unavailable.
+    const fallback = () => {
+      const trimmed = name.trim();
+      const cls = classifyStyle(trimmed, '');
+      const eraGuess = /油頭|pompadour|side|背頭/i.test(trimmed) ? '1950s'
+        : /狼|mullet|shag/i.test(trimmed) ? '1970s'
+        : /龐克|punk|mohawk/i.test(trimmed) ? '1980s'
+        : /碎蓋|韓|韓系|空氣|二次元/i.test(trimmed) ? '2020s'
+        : '2010s';
+      return {
+        name: trimmed,
+        en: trimmed.toUpperCase().replace(/[^A-Z0-9 ]/g, '').trim() || 'CUSTOM CUT',
+        era: eraGuess,
+        tagline: '由你定義的剪裁。',
+        description: `「${trimmed}」是一款融合當代與經典元素的髮型。其輪廓、層次與比例隨流行文化、地域與工具發展持續演化,是設計師詮釋個人風格的重要載體之一。`,
+        difficulty: 3,
+        duration: '40 min',
+        evolution: [
+          { year: '1960', label: '原型誕生', body: '相關剪裁概念於戰後西方男士髮型中初現,以工整側分為主。' },
+          { year: '1980', label: '次文化推進', body: '搖滾與街頭文化將其結構打散,引入反主流的層次與長度變化。' },
+          { year: '2000', label: '亞洲在地化', body: '日韓設計師加入細碎與輕量化處理,使其更貼合東亞臉型。' },
+          { year: '2015', label: '社群擴散', body: 'Instagram 與 YouTube 教學讓技法被全球年輕設計師快速複製。' },
+          { year: '2024', label: '當代演繹', body: '結合短打、紋理與留白,演化為今日多元的個人風格表達。' },
+        ],
+        source: 'fallback',
+      };
+    };
+
+    const finishWith = (data) => {
+      cacheRef.current[name] = data;
+      setResult(data);
+      pushHistory(name.trim());
+      // Persist a meta blob the home gallery can read for revisited cards
+      try {
+        const meta = {
+          en: data.en, era: data.era, tagline: data.tagline,
+          difficulty: data.difficulty, duration: data.duration,
+          description: data.description, evolution: data.evolution, tools: data.tools,
+        };
+        localStorage.setItem('luz_meta_' + name.trim(), JSON.stringify(meta));
+      } catch {}
+      setLoading(false);
+    };
+
+    if (!window.claude || !window.claude.complete) {
+      finishWith(fallback());
+      return;
+    }
+
+    try {
+      const text = await window.claude.complete(prompt);
+      const clean = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+      let data;
+      try { data = JSON.parse(clean); } catch { data = fallback(); }
+      if (!data.evolution || !Array.isArray(data.evolution) || data.evolution.length < 3) data = fallback();
+      data.source = data.source || 'ai';
+      finishWith(data);
+    } catch (e) {
+      finishWith(fallback());
+    }
+  };
+
+  const pushHistory = (name) => {
+    setHistory(prev => {
+      const next = [name, ...prev.filter(x => x !== name)].slice(0, 8);
+      try { localStorage.setItem('cuttingroom_search_history', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  // fetch top YouTube tutorials when result settles
+  React.useEffect(() => {
+    if (!result) return;
+    const cacheKey = 'yt_' + result.name;
+    try {
+      const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+      if (cached) { setVideos(cached); return; }
+    } catch {}
+
+    // YouTube videos: skip if no claude API
+    if (!window.claude || !window.claude.complete) {
+      setVideos([]);
+      return;
+    }
+
+    setLoadingVideos(true);
+    setVideos(null);
+    const prompt = `你是 YouTube 髮型教學影片資料庫。請列出 3 部關於髮型「${result.name} ${result.en || ''}」觀看數最高的教學影片。
+
+請回傳以下嚴格 JSON 格式 (不要 markdown):
+[
+  {"title":"影片完整標題","channel":"頻道名稱","views":"觀看數如 2.3M","duration":"長度如 8:42"},
+  ...共3部
+]
+
+請給真實合理的髮廊/造型師頻道名稱與標題,語言以中文或英文皆可。標題長度控制在 35 字內。`;
+
+    window.claude.complete(prompt).then(text => {
+      const clean = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+      const data = JSON.parse(clean);
+      const arr = Array.isArray(data) ? data.slice(0, 3) : [];
+      setVideos(arr);
+      try { localStorage.setItem(cacheKey, JSON.stringify(arr)); } catch {}
+    }).catch(() => setVideos([])).finally(() => setLoadingVideos(false));
+  }, [result?.name]);
+
+  return (
+    <div style={{ background: A2.paper, minHeight: '100%', color: A2.ink, paddingBottom: 60 }}>
+      {/* header */}
+      <div style={{ padding: '52px 20px 0' }}>
+        <div style={{ fontFamily: A2.mono, fontSize: 10, letterSpacing: 2, color: A2.muted, textTransform: 'uppercase' }}>
+          THE ARCHIVE · SEARCH
+        </div>
+        <div style={{ fontFamily: A2.serif, fontSize: 52, lineHeight: 0.9, fontStyle: 'italic', marginTop: 12, letterSpacing: -1 }}>
+          Search<br/>any cut.
+        </div>
+        <div style={{ fontFamily: A2.serif, fontSize: 14, lineHeight: 1.5, color: A2.muted, marginTop: 12 }}>
+          輸入任何髮型名稱,系統會自動整理該髮型的演化史與基本介紹。
+        </div>
+      </div>
+
+      {/* search bar */}
+      <div style={{ padding: '22px 20px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: `1.5px solid ${A2.ink}`, paddingBottom: 8 }}>
+          <span style={{ fontFamily: A2.serif, fontSize: 22, fontStyle: 'italic', color: A2.muted }}>※</span>
+          <input
+            type="text"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onCompositionStart={() => { composingRef.current = true; }}
+            onCompositionEnd={(e) => { composingRef.current = false; setQ(e.target.value); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !composingRef.current) {
+                e.preventDefault();
+                if (!loading && q.trim()) { console.log('[search] Enter key, q=', q); lookup(q); }
+              }
+            }}
+            placeholder="例如:Mullet, 羊毛卷, Buzz Cut..."
+            enterKeyHint="search"
+            inputMode="search"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent',
+              fontFamily: A2.serif, fontSize: 20, fontStyle: q ? 'normal' : 'italic', color: A2.ink, padding: '4px 0',
+              minWidth: 0, WebkitAppearance: 'none', appearance: 'none' }}
+          />
+          <button type="button" onClick={() => { if (!loading && q.trim()) { console.log('[search] GO clicked, q=', q); lookup(q); } }}
+            disabled={loading || !q.trim()}
+            style={{ background: 'transparent', border: 'none', cursor: loading ? 'wait' : 'pointer',
+              fontFamily: A2.mono, fontSize: 11, letterSpacing: 2, color: A2.accent, padding: '4px 8px' }}>
+            {loading ? '...' : 'GO →'}
+          </button>
+        </div>
+      </div>
+
+      {/* loading state */}
+      {loading && (
+        <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+          <div style={{ fontFamily: A2.serif, fontSize: 22, fontStyle: 'italic', color: A2.muted }}>
+            正在查找「{q}」...
+          </div>
+          <div style={{ fontFamily: A2.mono, fontSize: 10, letterSpacing: 2, color: A2.muted, marginTop: 14, textTransform: 'uppercase' }}>
+            COMPILING EVOLUTION
+          </div>
+          <div style={{ marginTop: 18, display: 'flex', justifyContent: 'center', gap: 6 }}>
+            {[0,1,2].map(i => (
+              <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: A2.accent,
+                animation: `dotPulse 1.2s ${i * 0.15}s infinite ease-in-out` }} />
+            ))}
+          </div>
+          <style>{`@keyframes dotPulse{0%,80%,100%{opacity:0.3;transform:scale(0.8)}40%{opacity:1;transform:scale(1)}}`}</style>
+        </div>
+      )}
+
+      {/* error */}
+      {error && (
+        <div style={{ padding: '20px', margin: '20px', border: `1px solid ${A2.accent}`, fontFamily: A2.serif, fontSize: 14, color: A2.accent }}>
+          {error}
+        </div>
+      )}
+
+      {/* result */}
+      {result && !loading && (
+        <div>
+          {/* hero */}
+          <div style={{ marginTop: 28, height: 220, background: '#1A1714', position: 'relative', overflow: 'hidden' }}>
+            {(() => {
+              const cachedImg = (() => { try { return localStorage.getItem('luz_img_' + result.name); } catch { return null; } })();
+              if (cachedImg) {
+                return (
+                  <img src={cachedImg} alt={result.name}
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}/>
+                );
+              }
+              return null;
+            })()}
+            <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 50% 30%, ${A2.tan}33 0%, transparent 70%)` }} />
+            <div style={{ position: 'absolute', top: 14, left: 20, right: 20, fontFamily: A2.mono, fontSize: 9, letterSpacing: 2, color: A2.tan, display: 'flex', justifyContent: 'space-between' }}>
+              <span>{result.en} · {result.era}</span>
+              <span>{result.source === 'ai' ? 'AI · COMPILED' : result.source === 'library' ? 'CURATED · LIBRARY' : 'CURATED'}</span>
+            </div>
+            <div style={{ position: 'absolute', top: 30, right: 14, fontFamily: A2.serif, fontSize: 200, lineHeight: 0.75, color: A2.tan, opacity: 0.12, fontStyle: 'italic' }}>{result.era?.match(/\d+/)?.[0]?.slice(-2) || '※'}</div>
+            <div style={{ position: 'absolute', bottom: 18, left: 20, right: 20 }}>
+              <div style={{ fontFamily: A2.serif, fontSize: 40, lineHeight: 0.9, color: A2.paper, fontStyle: 'italic', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{result.name}</div>
+              <div style={{ fontFamily: A2.mono, fontSize: 10, letterSpacing: 2, color: A2.tan, marginTop: 8, textTransform: 'uppercase', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{result.tagline}</div>
+            </div>
+            {/* upload your own image */}
+            <label style={{
+              position: 'absolute', top: 12, right: 12,
+              padding: '6px 10px', background: 'rgba(15,14,13,0.55)', color: A2.paper,
+              fontFamily: A2.mono, fontSize: 9, letterSpacing: 1.5, cursor: 'pointer',
+              border: `1px solid rgba(245,241,232,0.3)`,
+            }}>
+              ＋ 上傳照片
+              <input type="file" accept="image/*" style={{ display: 'none' }}
+                onChange={async (e) => {
+                  const f = e.target.files?.[0]; if (!f) return;
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    // resize to ~1200px wide JPEG to keep localStorage usable
+                    const img = new Image();
+                    img.onload = () => {
+                      const maxW = 1200;
+                      const scale = Math.min(1, maxW / img.width);
+                      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+                      const c = document.createElement('canvas');
+                      c.width = w; c.height = h;
+                      c.getContext('2d').drawImage(img, 0, 0, w, h);
+                      const dataUrl = c.toDataURL('image/jpeg', 0.82);
+                      try { localStorage.setItem('luz_img_' + result.name, dataUrl); } catch {}
+                      setResult(r => ({ ...r, __imgVer: (r.__imgVer || 0) + 1 }));
+                    };
+                    img.src = reader.result;
+                  };
+                  reader.readAsDataURL(f);
+                }}/>
+            </label>
+          </div>
+
+          {/* meta */}
+          <div style={{ padding: '24px 20px 0', fontFamily: A2.mono, fontSize: 9, letterSpacing: 2, color: A2.muted, display: 'flex', gap: 20, textTransform: 'uppercase' }}>
+            <span>LV. {'★'.repeat(result.difficulty || 3).padEnd(5, '☆')}</span>
+            <span>{result.duration}</span>
+            <span>5 EPOCHS</span>
+          </div>
+
+          {/* description */}
+          <div style={{ padding: '14px 20px 0' }}>
+            <div style={{ fontFamily: A2.serif, fontSize: 17, lineHeight: 1.45, letterSpacing: -0.1 }}>
+              {result.description}
+            </div>
+          </div>
+
+          {/* divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', margin: '24px 0 16px' }}>
+            <div style={{ flex: 1, height: 1, background: A2.ink }} />
+            <span style={{ fontFamily: A2.mono, fontSize: 9, letterSpacing: 2.5, textTransform: 'uppercase' }}>EVOLUTION</span>
+            <div style={{ flex: 1, height: 1, background: A2.ink }} />
+          </div>
+
+          {/* timeline */}
+          <div style={{ padding: '0 20px' }}>
+            <div style={{ position: 'relative', paddingBottom: 4 }}>
+              <div style={{ position: 'absolute', left: 0, right: 0, top: 38, height: 1, background: A2.ink }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
+                {result.evolution.map((e, i) => (
+                  <button key={i} onClick={() => setActiveYear(i)}
+                    style={{ border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', textAlign: 'center', flex: 1 }}>
+                    <div style={{ fontFamily: A2.serif, fontSize: 14, fontStyle: 'italic',
+                      color: activeYear === i ? A2.accent : A2.ink, transition: 'color .2s' }}>{e.year}</div>
+                    <div style={{ margin: '8px auto 0', width: activeYear === i ? 12 : 6, height: activeYear === i ? 12 : 6,
+                      borderRadius: '50%', background: activeYear === i ? A2.accent : A2.ink, transition: 'all .2s' }} />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={{ marginTop: 24, paddingLeft: 2 }}>
+              <div style={{ fontFamily: A2.mono, fontSize: 9, letterSpacing: 2, color: A2.accent, textTransform: 'uppercase' }}>
+                {result.evolution[activeYear].year} · {result.evolution[activeYear].label}
+              </div>
+              <div style={{ fontFamily: A2.serif, fontSize: 16, lineHeight: 1.45, marginTop: 8, minHeight: 84 }}>
+                {result.evolution[activeYear].body}
+              </div>
+            </div>
+          </div>
+
+          {/* 髮廊例句（中英對照）*/}
+          {(result.example_zh || result.example_en) && (
+            <div style={{ padding: '28px 20px 0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '0 0 14px' }}>
+                <div style={{ flex: 1, height: 1, background: A2.ink }} />
+                <span style={{ fontFamily: A2.mono, fontSize: 9, letterSpacing: 2.5, textTransform: 'uppercase' }}>SAY IT · 髮廊例句</span>
+                <div style={{ flex: 1, height: 1, background: A2.ink }} />
+              </div>
+              <div style={{ borderLeft: `2px solid ${A2.accent}`, paddingLeft: 14 }}>
+                {result.example_zh && (
+                  <div style={{ fontFamily: A2.serif, fontSize: 16, lineHeight: 1.5, fontStyle: 'italic', color: A2.ink, marginBottom: 8 }}>
+                    「{result.example_zh}」
+                  </div>
+                )}
+                {result.example_en && (
+                  <div style={{ fontFamily: A2.serif, fontSize: 14, lineHeight: 1.5, fontStyle: 'italic', color: A2.muted }}>
+                    "{result.example_en}"
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* CTA */}
+          <div style={{ padding: '28px 20px 0' }}>
+            {/* YouTube top tutorials */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '0 0 14px' }}>
+                <div style={{ flex: 1, height: 1, background: A2.ink }} />
+                <span style={{ fontFamily: A2.mono, fontSize: 9, letterSpacing: 2.5, textTransform: 'uppercase' }}>TOP 3 · YouTube</span>
+                <div style={{ flex: 1, height: 1, background: A2.ink }} />
+              </div>
+              {loadingVideos && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[0,1,2].map(i => (
+                    <div key={i} style={{ display: 'flex', gap: 12 }}>
+                      <div style={{ width: 120, height: 68, background: A2.ink + '15' }} />
+                      <div style={{ flex: 1, paddingTop: 4 }}>
+                        <div style={{ height: 10, width: '85%', background: A2.ink + '15', marginBottom: 6 }} />
+                        <div style={{ height: 8, width: '50%', background: A2.ink + '10' }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {!loadingVideos && videos && videos.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {videos.map((v, i) => {
+                    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent((v.title||'') + ' ' + (v.channel||''))}`;
+                    const openYT = (e) => {
+                      e.preventDefault();
+                      // escape the preview iframe sandbox by going through the parent
+                      try { window.top.open(url, '_blank', 'noopener,noreferrer'); }
+                      catch { window.open(url, '_blank', 'noopener,noreferrer'); }
+                    };
+                    return (
+                    <div key={i} onClick={openYT}
+                      style={{ display: 'flex', gap: 12, textDecoration: 'none', color: A2.ink, alignItems: 'flex-start', cursor: 'pointer' }}>
+                      {/* thumbnail */}
+                      <div style={{ width: 120, height: 68, background: '#1A1714', position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, ${['#3D2818','#1A1714','#2D2520'][i]} 0%, #0F0E0D 100%)` }} />
+                        <div style={{ position: 'absolute', top: 4, left: 4, fontFamily: A2.mono, fontSize: 8, letterSpacing: 1.5, color: A2.tan, opacity: 0.8 }}>
+                          {String(i+1).padStart(2,'0')}
+                        </div>
+                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+                          width: 28, height: 28, borderRadius: '50%', background: 'rgba(232,228,217,0.92)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: 0, height: 0, borderLeft: '8px solid #1A1714', borderTop: '5px solid transparent', borderBottom: '5px solid transparent', marginLeft: 2 }} />
+                        </div>
+                        <div style={{ position: 'absolute', bottom: 3, right: 4, fontFamily: A2.mono, fontSize: 8, letterSpacing: 0.5, color: A2.paper, background: 'rgba(0,0,0,0.6)', padding: '1px 4px' }}>
+                          {v.duration || '—'}
+                        </div>
+                      </div>
+                      {/* meta */}
+                      <div style={{ flex: 1, minWidth: 0, paddingTop: 1 }}>
+                        <div style={{ fontFamily: A2.serif, fontSize: 13, lineHeight: 1.3, letterSpacing: -0.1,
+                          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {v.title}
+                        </div>
+                        <div style={{ fontFamily: A2.mono, fontSize: 9, letterSpacing: 1.2, color: A2.muted, marginTop: 6, textTransform: 'uppercase', display: 'flex', gap: 10 }}>
+                          <span style={{ color: A2.accent }}>▶ {v.views || '—'}</span>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.channel}</span>
+                        </div>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+              )}
+              {!loadingVideos && videos && videos.length === 0 && (
+                <div style={{ fontFamily: A2.mono, fontSize: 10, letterSpacing: 1.5, color: A2.muted, padding: '12px 0' }}>
+                  暫無教學影片
+                </div>
+              )}
+            </div>
+
+            <div style={{ borderTop: `1px solid ${A2.ink}`, borderBottom: `1px solid ${A2.ink}` }}>
+              {/* primary: add to favorites */}
+              <button
+                onClick={() => {
+                  if (!result) return;
+                  if (window.HairFavs.isFav(result.name)) {
+                    window.HairFavs.removeFav(result.name);
+                  } else {
+                    window.HairFavs.addFav(result);
+                  }
+                  setFavTick(t => t + 1);
+                }}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%',
+                  padding: '14px 0', background: 'transparent', border: 'none', cursor: 'pointer',
+                  fontFamily: 'inherit', color: A2.ink, textAlign: 'left',
+                  borderBottom: `1px solid ${A2.wash}` }}>
+                <span style={{ fontFamily: A2.serif, fontSize: 20, fontStyle: 'italic' }}>
+                  {window.HairFavs.isFav(result.name) ? '已加入 SKILLS · 移除' : '加入 SKILLS'}
+                </span>
+                <span style={{ fontFamily: A2.mono, fontSize: 18, color: window.HairFavs.isFav(result.name) ? A2.accent : A2.ink }}>
+                  {window.HairFavs.isFav(result.name) ? '✓' : '+'}
+                </span>
+              </button>
+              {/* secondary: begin learning */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0' }}>
+                <span style={{ fontFamily: A2.serif, fontSize: 17, fontStyle: 'italic', color: A2.muted }}>加入我的學習</span>
+                <span style={{ fontFamily: A2.mono, fontSize: 16, color: A2.muted }}>→</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* idle: suggestions + history */}
+      {!result && !loading && (
+        <div style={{ padding: '32px 20px 0' }}>
+          {history.length > 0 && (
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontFamily: A2.mono, fontSize: 9, letterSpacing: 2, color: A2.muted, textTransform: 'uppercase', marginBottom: 12 }}>
+                Recent
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {history.map((h, i) => (
+                  <button key={i} type="button" onClick={() => { setQ(h); lookup(h); }}
+                    style={{ border: `1px solid ${A2.ink}`, background: 'transparent', padding: '6px 12px',
+                      fontFamily: A2.serif, fontSize: 13, fontStyle: 'italic', color: A2.ink, cursor: 'pointer' }}>
+                    {h}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div style={{ fontFamily: A2.mono, fontSize: 9, letterSpacing: 2, color: A2.muted, textTransform: 'uppercase', marginBottom: 12 }}>
+            Suggested · {SUGGESTED.length} cuts
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, border: `1px solid ${A2.ink}` }}>
+            {SUGGESTED.map((s, i) => (
+              <button key={s} type="button" onClick={() => { console.log('[search] suggest clicked:', s); setQ(s); lookup(s); }}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
+                  padding: '14px 14px', borderRight: i % 2 === 0 ? `1px solid ${A2.ink}` : 'none',
+                  borderBottom: i < SUGGESTED.length - 2 ? `1px solid ${A2.wash}` : 'none',
+                  fontFamily: A2.serif, fontSize: 16, color: A2.ink, fontStyle: 'italic',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{s}</span>
+                <span style={{ fontFamily: A2.mono, fontSize: 9, color: A2.muted, opacity: 0.6 }}>→</span>
+              </button>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 22, fontFamily: A2.serif, fontSize: 13, color: A2.muted, lineHeight: 1.55, fontStyle: 'italic' }}>
+            提示:不在列表的髮型也能搜尋,系統會自動編譯該髮型的歷史。
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+window.ASearchPanel = ASearchPanel;
+
+})();
+
+// ── mobile-extras.jsx ──
+;(function(){
+// Long-term mobile extras for LUZ STYLE Art Gallery
+// - Persistence (localStorage)
+// - Today screen (recent searches focus)
+// - Log Practice (bottom sheet)
+// - Practice Timer
+// - Notes per style
+// - Editable user name
+
+const { HAIRSTYLES, CURRENT_USER, TEXT_STEPS } = window.HAIR_DATA;
+const A = window.VariantA.A;
+
+// ─────────────── Persistence ───────────────
+const STORE_KEY = 'luz-style-v1';
+
+function readStore() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); }
+  catch { return {}; }
+}
+function writeStore(patch) {
+  const prev = readStore();
+  const next = { ...prev, ...patch };
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(next)); } catch {}
+  return next;
+}
+
+function usePersistedState(key, initial) {
+  const [v, setV] = React.useState(() => {
+    const s = readStore();
+    return key in s ? s[key] : initial;
+  });
+  const set = React.useCallback((val) => {
+    setV(prev => {
+      const next = typeof val === 'function' ? val(prev) : val;
+      writeStore({ [key]: next });
+      return next;
+    });
+  }, [key]);
+  return [v, set];
+}
+
+function useStore() {
+  const [logs, setLogs] = usePersistedState('logs', []);
+  const [notes, setNotes] = usePersistedState('notes', {}); // { [hairId]: string }
+  const [userName, setUserName] = usePersistedState('userName', '');
+
+  const addLog = (entry) => {
+    const today = new Date().toISOString().slice(0, 10);
+    setLogs(prev => [{ id: `log-${Date.now()}`, date: today, ...entry }, ...(prev || [])]);
+  };
+
+  const setNote = (hairId, text) => setNotes(prev => ({ ...(prev || {}), [hairId]: text }));
+
+  return {
+    logs: logs || [],
+    addLog,
+    notes: notes || {},
+    setNote,
+    userName: userName || '',
+    setUserName,
+  };
+}
+
+window.useCRStore = useStore;
+
+// ─────────────── Tiny UI atoms ───────────────
+function Mono({ children, style }) {
+  return <span style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', ...style }}>{children}</span>;
+}
+
+function Sheet({ open, onClose, children, title }) {
+  if (!open) return null;
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 80, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(15,14,13,0.5)', backdropFilter: 'blur(2px)', animation: 'fade .2s ease' }} />
+      <div style={{
+        position: 'relative', background: A.paper, borderTop: `1px solid ${A.ink}`,
+        maxHeight: '88vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+        animation: 'sheetUp .28s cubic-bezier(.2,.8,.2,1)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px' }}>
+          <div style={{ width: 36, height: 3, background: A.ink, opacity: 0.3, borderRadius: 2 }} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 20px 14px', borderBottom: `1px solid ${A.ink}` }}>
+          <Mono>{title}</Mono>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontFamily: A.mono, fontSize: 11, letterSpacing: 2, color: A.ink, cursor: 'pointer', padding: 4 }}>CLOSE ✕</button>
+        </div>
+        <div style={{ padding: '20px' }}>{children}</div>
+      </div>
+      <style>{`@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}`}</style>
+    </div>
+  );
+}
+
+// Helper: read recent searches (also used to fetch the cached image, if any)
+function getRecentSearches() {
+  try { return JSON.parse(localStorage.getItem('cuttingroom_search_history') || '[]'); }
+  catch { return []; }
+}
+function getCachedSearchImage(name) {
+  try { return localStorage.getItem('luz_img_' + name) || null; } catch { return null; }
+}
+function getCachedSearchMeta(name) {
+  try {
+    const raw = localStorage.getItem('luz_meta_' + name);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+// ─────────────── Editable user name ───────────────
+function NameField({ value, onSave }) {
+  const [editing, setEditing] = React.useState(false);
+  const [draft, setDraft] = React.useState(value);
+  React.useEffect(() => setDraft(value), [value]);
+  const commit = () => {
+    const trimmed = (draft || '').trim();
+    onSave(trimmed);
+    setEditing(false);
+  };
+  const display = value || '請輸入名字';
+  if (editing) {
+    return (
+      <input
+        value={draft}
+        autoFocus
+        onChange={e => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setDraft(value); setEditing(false); } }}
+        placeholder="你的名字"
+        maxLength={24}
+        style={{
+          fontFamily: A.serif, fontSize: 52, fontStyle: 'italic', letterSpacing: -1,
+          background: 'transparent', border: 'none', borderBottom: `2px solid ${A.accent}`,
+          color: A.ink, padding: 0, outline: 'none', width: '100%',
+          lineHeight: 1.05,
+        }}/>
+    );
+  }
+  return (
+    <span onClick={() => setEditing(true)}
+      style={{
+        fontFamily: A.serif, fontSize: 52, fontStyle: 'italic', letterSpacing: -1,
+        cursor: 'pointer', display: 'inline-flex', alignItems: 'baseline', gap: 8,
+        color: value ? A.ink : A.muted,
+        borderBottom: `1px dashed ${A.muted}`,
+        lineHeight: 1.05,
+      }}>
+      {display}
+      <span style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 1.5, color: A.accent, fontStyle: 'normal' }}>✎</span>
+    </span>
+  );
+}
+
+// ─────────────── Today (home) — recent searches focus ───────────────
+function TodayHome({ onOpenStyle, onOpenLog, onOpenTimer, onOpenNotes, alias }) {
+  const store = useStore();
+  const [recents, setRecents] = React.useState(() => getRecentSearches());
+  const aliasText = (alias && String(alias).trim()) || '';
+  const [imgVersion, setImgVersion] = React.useState(0); // bump to re-read cached images
+
+  // Re-read recents whenever the tab is shown (focus/visibility/storage)
+  React.useEffect(() => {
+    const refresh = () => { setRecents(getRecentSearches()); setImgVersion(v => v + 1); };
+    window.addEventListener('storage', refresh);
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    const t = setInterval(refresh, 1500); // catch in-app changes (no event fires)
+    return () => {
+      window.removeEventListener('storage', refresh);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+      clearInterval(t);
+    };
+  }, []);
+
+  const today = new Date();
+  const dateStr = `${today.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()} · ${String(today.getDate()).padStart(2,'0')} · ${today.getFullYear()}`;
+  const weekday = today.toLocaleDateString('zh-TW', { weekday: 'long' });
+
+  const openByName = (name) => {
+    // Look up cached search result, fall back to a synthetic hair object
+    const meta = getCachedSearchMeta(name) || {};
+    const img = getCachedSearchImage(name);
+    const hair = {
+      id: 'recent-' + name,
+      name,
+      en: meta.en || name.toUpperCase(),
+      tagline: meta.tagline || '',
+      era: meta.era || '',
+      difficulty: meta.difficulty || 3,
+      duration: meta.duration || '— min',
+      description: meta.description || '',
+      evolution: meta.evolution || [],
+      hero: '#1A1714',
+      accent: A.tan,
+      lessons: 0, completed: 0,
+      tools: meta.tools || [],
+      __recent: true,
+      __image: img,
+    };
+    onOpenStyle(hair);
+    // Also trigger search lookup of the name (so SEARCH tab shows full data)
+    try { window.__triggerSearch && window.__triggerSearch(name); } catch {}
+  };
+
+  const removeRecent = (name) => {
+    try {
+      const next = getRecentSearches().filter(x => x !== name);
+      localStorage.setItem('cuttingroom_search_history', JSON.stringify(next));
+      setRecents(next);
+    } catch {}
+  };
+
+  return (
+    <div style={{ background: A.paper, minHeight: '100%', color: A.ink, paddingBottom: 40 }}>
+      {/* Masthead — brand */}
+      <div style={{ padding: '52px 20px 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <Mono style={{ color: A.muted }}>VOL.01 · {dateStr}</Mono>
+          <Mono style={{ color: A.muted }}>{weekday}</Mono>
+        </div>
+        <div style={{ fontFamily: A.serif, fontSize: 56, lineHeight: 0.88, fontStyle: 'italic', letterSpacing: -1.5, marginTop: 18, fontWeight: 400 }}>
+          LUZ<br/>STYLE<br/>
+          <span style={{ fontStyle: 'normal', fontSize: 30, letterSpacing: 0.5, display: 'inline-block', marginTop: 8 }}>
+            {aliasText && (
+              <span style={{ fontFamily: A.serif, fontStyle: 'italic', fontSize: 26, letterSpacing: 0, marginRight: 10, color: A.accent }}>
+                {aliasText}'s
+              </span>
+            )}
+            Art Gallery.
+          </span>
+        </div>
+        <div style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2.4, color: A.accent, marginTop: 14, textTransform: 'uppercase' }}>
+          A Journal of Scissors, Hands &amp; Form
+        </div>
+      </div>
+
+      {/* Greeting + name */}
+      <div style={{ padding: '36px 20px 0' }}>
+        <Mono style={{ color: A.muted }}>歡迎光臨 · CURATOR</Mono>
+        <div style={{ marginTop: 8 }}>
+          <NameField value={store.userName} onSave={store.setUserName} />
+        </div>
+        <div style={{ fontFamily: A.serif, fontSize: 14, fontStyle: 'italic', color: A.muted, marginTop: 10 }}>
+          {store.userName ? `早安,${store.userName.split(' ')[0]}。今日想看哪一件作品?` : '點擊上方,留下你的名字。'}
+        </div>
+      </div>
+
+      {/* Recent searches gallery */}
+      <div style={{ padding: '36px 0 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', marginBottom: 18 }}>
+          <div style={{ flex: 1, height: 1, background: A.ink }} />
+          <Mono>RECENT GALLERY · 最近瀏覽</Mono>
+          <div style={{ flex: 1, height: 1, background: A.ink }} />
+        </div>
+
+        {recents.length === 0 && (
+          <div style={{ padding: '0 20px' }}>
+            <div style={{ border: `1px dashed ${A.ink}`, padding: '40px 24px', textAlign: 'center' }}>
+              <div style={{ fontFamily: A.serif, fontSize: 22, fontStyle: 'italic', lineHeight: 1.3 }}>
+                這座畫廊還是空的。
+              </div>
+              <Mono style={{ color: A.muted, marginTop: 14, display: 'block' }}>
+                ↘ 前往 SEARCH,搜尋一個髮型開始收藏
+              </Mono>
+            </div>
+          </div>
+        )}
+
+        {recents.length > 0 && (
+          <div style={{ padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {recents.map((name, i) => {
+              const img = getCachedSearchImage(name);
+              const meta = getCachedSearchMeta(name);
+              const numStr = String(i + 1).padStart(2, '0');
+              return (
+                <div key={name + ':' + imgVersion} style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => openByName(name)}
+                    style={{
+                      width: '100%', padding: 0, border: 'none', background: 'transparent',
+                      cursor: 'pointer', textAlign: 'left', color: A.ink, fontFamily: 'inherit',
+                    }}>
+                    <div style={{
+                      height: 180, position: 'relative', overflow: 'hidden',
+                      background: img ? '#0F0E0D' : A.wash,
+                      border: img ? 'none' : `1px solid ${A.ink}`,
+                    }}>
+                      {img ? (
+                        <img src={img} alt={name}
+                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}/>
+                      ) : (
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ fontFamily: A.serif, fontSize: 72, fontStyle: 'italic', color: A.ink, opacity: 0.18 }}>{numStr}</div>
+                        </div>
+                      )}
+                      <div style={{
+                        position: 'absolute', top: 8, left: 10,
+                        fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5,
+                        color: img ? A.paper : A.muted,
+                        textShadow: img ? '0 1px 2px rgba(0,0,0,0.4)' : 'none',
+                      }}>№ {numStr}</div>
+                      {img && (
+                        <div style={{
+                          position: 'absolute', inset: 0,
+                          background: 'linear-gradient(180deg, transparent 50%, rgba(15,14,13,0.55) 100%)',
+                        }} />
+                      )}
+                    </div>
+                    <div style={{ marginTop: 10 }}>
+                      <div style={{ fontFamily: A.serif, fontSize: 18, lineHeight: 1.15, letterSpacing: -0.2 }}>{name}</div>
+                      <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted, textTransform: 'uppercase', marginTop: 3 }}>
+                        {meta?.en || 'TAP TO REVISIT'}
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); removeRecent(name); }}
+                    title="從畫廊移除"
+                    style={{
+                      position: 'absolute', top: 6, right: 6,
+                      width: 24, height: 24, borderRadius: '50%',
+                      border: 'none', background: 'rgba(15,14,13,0.55)', color: A.paper,
+                      fontFamily: A.mono, fontSize: 11, lineHeight: 1, cursor: 'pointer',
+                    }}>✕</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Recent practice logs (only if any) */}
+      {(store.logs || []).length > 0 && (
+        <div style={{ padding: '40px 20px 0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+            <div style={{ flex: 1, height: 1, background: A.ink }} />
+            <Mono>PRACTICE LOG · 練習紀錄</Mono>
+            <div style={{ flex: 1, height: 1, background: A.ink }} />
+          </div>
+          {(store.logs || []).slice(0, 4).map(l => {
+            const h = HAIRSTYLES.find(x => x.id === l.hairId);
+            const styleName = h?.name || l.hairName || '練習';
+            const d = new Date(l.date);
+            const md = `${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+            return (
+              <div key={l.id} style={{ display: 'flex', gap: 14, padding: '14px 0', borderBottom: `1px solid ${A.wash}`, alignItems: 'baseline' }}>
+                <div style={{ fontFamily: A.serif, fontSize: 22, fontStyle: 'italic', color: A.muted, width: 56 }}>{md}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: A.serif, fontSize: 16, fontStyle: 'italic' }}>{styleName}</div>
+                  {l.note && <div style={{ fontFamily: A.serif, fontSize: 13, color: A.muted, marginTop: 2 }}>「{l.note}」</div>}
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <Mono>{l.minutes}m · {l.rating}/10</Mono>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Log practice CTA — small, optional */}
+      <div style={{ padding: '32px 20px 0' }}>
+        <button onClick={onOpenLog} style={{
+          width: '100%', padding: '14px',
+          background: 'transparent', color: A.ink, border: `1px solid ${A.ink}`, cursor: 'pointer',
+          fontFamily: A.serif, fontSize: 16, fontStyle: 'italic',
+        }}>
+          ＋ 紀錄今日練習
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────── Log Practice (sheet) ───────────────
+function LogPracticeSheet({ open, onClose, defaultHairId }) {
+  const store = useStore();
+  const recents = getRecentSearches();
+  // Mix recent searches as "style names" with the seed HAIRSTYLES
+  const allOptions = React.useMemo(() => {
+    const out = [];
+    recents.forEach(name => out.push({ id: 'r-' + name, name, en: (getCachedSearchMeta(name)?.en) || '' }));
+    HAIRSTYLES.forEach(h => { if (!out.find(x => x.name === h.name)) out.push({ id: h.id, name: h.name, en: h.en }); });
+    return out;
+  }, [open]);
+
+  const [hairId, setHairId] = React.useState(defaultHairId || allOptions[0]?.id || '');
+  const [minutes, setMinutes] = React.useState(45);
+  const [rating, setRating] = React.useState(7);
+  const [note, setNote] = React.useState('');
+
+  React.useEffect(() => {
+    if (open) {
+      setHairId(defaultHairId || allOptions[0]?.id || '');
+    }
+  }, [open, defaultHairId]);
+
+  if (!open) return null;
+  if (allOptions.length === 0) {
+    return (
+      <Sheet open={open} onClose={onClose} title="紀錄練習 · LOG PRACTICE">
+        <div style={{ fontFamily: A.serif, fontSize: 16, lineHeight: 1.5, color: A.muted }}>
+          先去 SEARCH 搜尋一個髮型,再回來紀錄練習。
+        </div>
+      </Sheet>
+    );
+  }
+
+  const submit = () => {
+    const opt = allOptions.find(x => x.id === hairId);
+    store.addLog({
+      hairId,
+      hairName: opt?.name,
+      minutes: Number(minutes),
+      rating: Number(rating),
+      note,
+    });
+    setNote(''); setRating(7); setMinutes(45);
+    onClose();
+  };
+
+  return (
+    <Sheet open={open} onClose={onClose} title="紀錄練習 · LOG PRACTICE">
+      <div>
+        <Mono style={{ color: A.muted }}>髮型 · STYLE</Mono>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 10 }}>
+          {allOptions.slice(0, 8).map(h => {
+            const on = h.id === hairId;
+            return (
+              <button key={h.id} onClick={() => setHairId(h.id)} style={{
+                padding: '14px 12px', textAlign: 'left',
+                border: `1px solid ${on ? A.accent : A.ink}`,
+                background: on ? A.accent : A.paper,
+                color: on ? A.paper : A.ink, cursor: 'pointer', fontFamily: 'inherit',
+              }}>
+                <div style={{ fontFamily: A.serif, fontSize: 16, fontStyle: 'italic' }}>{h.name}</div>
+                {h.en && <Mono style={{ color: on ? A.paper : A.muted, marginTop: 2, display: 'block' }}>{h.en}</Mono>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <Mono style={{ color: A.muted }}>耗時 · MINUTES</Mono>
+          <span style={{ fontFamily: A.serif, fontSize: 28, fontStyle: 'italic' }}>{minutes}<span style={{ fontSize: 14, color: A.muted, marginLeft: 4 }}>min</span></span>
+        </div>
+        <input type="range" min="5" max="180" step="5" value={minutes} onChange={e => setMinutes(e.target.value)}
+          style={{ width: '100%', marginTop: 10, accentColor: A.accent }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Mono style={{ color: A.muted }}>5</Mono><Mono style={{ color: A.muted }}>180</Mono>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <Mono style={{ color: A.muted }}>自評 · SELF-RATING</Mono>
+          <span style={{ fontFamily: A.serif, fontSize: 28, fontStyle: 'italic' }}>{rating}<span style={{ fontSize: 14, color: A.muted }}>/10</span></span>
+        </div>
+        <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
+          {Array.from({length:10}).map((_,i)=>{
+            const v=i+1; const on=v<=rating;
+            return (
+              <button key={v} onClick={()=>setRating(v)} style={{
+                flex:1, height:36, border:`1px solid ${A.ink}`,
+                background: on ? A.ink : 'transparent', color: on ? A.paper : A.ink,
+                cursor:'pointer', fontFamily: A.mono, fontSize: 11,
+              }}>{v}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 24 }}>
+        <Mono style={{ color: A.muted }}>心得 · NOTES (可選)</Mono>
+        <textarea value={note} onChange={e => setNote(e.target.value)}
+          placeholder="這次學到了什麼?哪裡還可以更好?"
+          style={{
+            width: '100%', minHeight: 90, marginTop: 10, padding: 12,
+            border: `1px solid ${A.ink}`, background: A.paper, color: A.ink,
+            fontFamily: A.serif, fontSize: 15, lineHeight: 1.45, resize: 'vertical',
+            outline: 'none',
+          }}/>
+      </div>
+
+      <button onClick={submit} style={{
+        width: '100%', padding: 16, marginTop: 26, border: 'none',
+        background: A.ink, color: A.paper, cursor: 'pointer',
+        fontFamily: A.serif, fontSize: 18, fontStyle: 'italic',
+      }}>
+        儲存紀錄 →
+      </button>
+    </Sheet>
+  );
+}
+
+// ─────────────── Practice Timer ───────────────
+function TimerScreen({ open, onClose, hair }) {
+  const targetSec = parseInt((hair?.duration || '45 min'), 10) * 60 || 45 * 60;
+  const [elapsed, setElapsed] = React.useState(0);
+  const [running, setRunning] = React.useState(false);
+  const intervalRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!open) { setRunning(false); setElapsed(0); }
+  }, [open]);
+
+  React.useEffect(() => {
+    if (running) {
+      intervalRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+      return () => clearInterval(intervalRef.current);
+    }
+  }, [running]);
+
+  if (!open) return null;
+
+  const remaining = Math.max(0, targetSec - elapsed);
+  const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  const pct = Math.min(100, (elapsed / targetSec) * 100);
+  const overtime = elapsed > targetSec;
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 90, background: A.ink, color: A.paper,
+      display: 'flex', flexDirection: 'column',
+      paddingTop: 'env(safe-area-inset-top, 0px)',
+      paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      animation: 'fade .25s ease',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 20px 0' }}>
+        <Mono style={{ color: A.tan }}>TIMER · {hair?.en || hair?.name || ''}</Mono>
+        <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: A.paper, fontFamily: A.mono, fontSize: 11, letterSpacing: 2, cursor: 'pointer' }}>CLOSE ✕</button>
+      </div>
+
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 20px' }}>
+        <Mono style={{ color: A.tan, marginBottom: 8 }}>{overtime ? 'OVERTIME +' : 'REMAINING'}</Mono>
+        <div style={{ fontFamily: A.serif, fontSize: 110, fontStyle: 'italic', lineHeight: 1, letterSpacing: -3, color: overtime ? A.accent : A.paper }}>
+          {fmt(overtime ? elapsed - targetSec : remaining)}
+        </div>
+        <Mono style={{ color: 'rgba(245,241,232,0.5)', marginTop: 8 }}>
+          TARGET {hair?.duration || '45 MIN'} · ELAPSED {fmt(elapsed)}
+        </Mono>
+
+        <div style={{ width: '100%', marginTop: 36, position: 'relative', height: 22 }}>
+          <div style={{ position: 'absolute', top: 10, left: 0, right: 0, height: 2, background: 'rgba(245,241,232,0.2)' }} />
+          <div style={{ position: 'absolute', top: 10, left: 0, width: `${pct}%`, height: 2, background: A.tan, transition: 'width 1s linear' }} />
+        </div>
+
+        {hair?.name && (
+          <div style={{ marginTop: 36, padding: '20px', border: `1px solid rgba(245,241,232,0.2)`, width: '100%' }}>
+            <Mono style={{ color: A.tan }}>{hair.en || 'STYLE'}</Mono>
+            <div style={{ fontFamily: A.serif, fontSize: 24, fontStyle: 'italic', marginTop: 8 }}>{hair.name}</div>
+            {hair.tagline && (
+              <div style={{ fontFamily: A.serif, fontSize: 14, lineHeight: 1.5, marginTop: 8, color: 'rgba(245,241,232,0.7)' }}>
+                {hair.tagline}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div style={{ padding: '16px 20px 24px', display: 'flex', gap: 10 }}>
+        <button onClick={() => { setElapsed(0); setRunning(false); }} style={{
+          flex: 1, padding: 18, border: `1px solid ${A.paper}`, background: 'transparent', color: A.paper,
+          fontFamily: A.mono, fontSize: 11, letterSpacing: 2, cursor: 'pointer',
+        }}>RESET</button>
+        <button onClick={() => setRunning(r => !r)} style={{
+          flex: 2, padding: 18, border: 'none',
+          background: running ? A.accent : A.paper, color: running ? A.paper : A.ink,
+          fontFamily: A.serif, fontSize: 20, fontStyle: 'italic', cursor: 'pointer',
+        }}>{running ? '暫停 ⏸' : '開始 ▷'}</button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────── Notes drawer ───────────────
+function NotesSheet({ open, onClose, hair }) {
+  const store = useStore();
+  const [text, setText] = React.useState('');
+  React.useEffect(() => {
+    if (open && hair) setText(store.notes[hair.id] || '');
+  }, [open, hair?.id]);
+
+  if (!open || !hair) return null;
+  const save = () => { store.setNote(hair.id, text); onClose(); };
+
+  return (
+    <Sheet open={open} onClose={onClose} title={`筆記 · ${hair.en || hair.name}`}>
+      <Mono style={{ color: A.muted }}>{hair.name} · 個人心得 (僅本機儲存)</Mono>
+      <textarea value={text} onChange={e => setText(e.target.value)}
+        autoFocus
+        placeholder="記下你的訣竅、踩過的雷、客人的回饋…"
+        style={{
+          width: '100%', minHeight: 240, marginTop: 12, padding: 14,
+          border: `1px solid ${A.ink}`, background: A.paper, color: A.ink,
+          fontFamily: A.serif, fontSize: 16, lineHeight: 1.55, resize: 'vertical', outline: 'none',
+        }}/>
+      <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+        <button onClick={onClose} style={{
+          flex: 1, padding: 16, background: 'transparent', border: `1px solid ${A.ink}`,
+          color: A.ink, fontFamily: A.mono, fontSize: 11, letterSpacing: 2, cursor: 'pointer',
+        }}>取消</button>
+        <button onClick={save} style={{
+          flex: 2, padding: 16, background: A.ink, color: A.paper, border: 'none',
+          fontFamily: A.serif, fontSize: 17, fontStyle: 'italic', cursor: 'pointer',
+        }}>儲存筆記 →</button>
+      </div>
+    </Sheet>
+  );
+}
+
+// ─────────────── FAB ───────────────
+function FAB({ onLog, onTimer, hidden, dark }) {
+  const [open, setOpen] = React.useState(false);
+  if (hidden) return null;
+  return (
+    <>
+      {open && (
+        <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(15,14,13,0.3)' }} />
+      )}
+      <div style={{
+        position: 'fixed', right: 18, zIndex: 65,
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)',
+        display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10,
+      }}>
+        {open && (
+          <>
+            <button onClick={() => { setOpen(false); onTimer(); }} style={{
+              padding: '12px 18px', background: A.paper, border: `1px solid ${A.ink}`, color: A.ink,
+              fontFamily: A.serif, fontSize: 15, fontStyle: 'italic', cursor: 'pointer',
+              boxShadow: '0 6px 18px rgba(15,14,13,0.18)',
+              animation: 'fabIn .2s ease',
+            }}>⏱ 開始計時</button>
+            <button onClick={() => { setOpen(false); onLog(); }} style={{
+              padding: '12px 18px', background: A.paper, border: `1px solid ${A.ink}`, color: A.ink,
+              fontFamily: A.serif, fontSize: 15, fontStyle: 'italic', cursor: 'pointer',
+              boxShadow: '0 6px 18px rgba(15,14,13,0.18)',
+              animation: 'fabIn .2s ease',
+            }}>＋ 紀錄練習</button>
+          </>
+        )}
+        <button onClick={() => setOpen(o => !o)} style={{
+          width: 56, height: 56, borderRadius: '50%',
+          background: A.accent, color: A.paper, border: 'none', cursor: 'pointer',
+          fontFamily: A.serif, fontSize: 28, fontStyle: 'italic',
+          boxShadow: '0 8px 22px rgba(201,69,47,0.42)',
+          transform: open ? 'rotate(45deg)' : 'none', transition: 'transform .25s',
+        }}>＋</button>
+      </div>
+      <style>{`@keyframes fabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}`}</style>
+    </>
+  );
+}
+
+window.MobileExtras = {
+  TodayHome, LogPracticeSheet, TimerScreen, NotesSheet, FAB, Sheet, useStore, Mono,
+};
+
+})();
+
+// ── tweaks-panel.jsx ──
+;(function(){
+
+// tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel"
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">{children}</div>
+      </div>
+    </>
+  );
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({ label, children }) {
+  return (
+    <>
+      <div className="twk-sect">{label}</div>
+      {children}
+    </>
+  );
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+
+function TweakColor({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <input type="color" className="twk-swatch" value={value}
+             onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+
+})();
+
+// ── main app ──
+const { AHome, AProfile, AFavorites, ASteps, AVideo, AWorks, ARewards, A } = window.VariantA;
+const { ASearchPanel } = window;
+const { TodayHome, LogPracticeSheet, TimerScreen, NotesSheet, FAB, Mono } = window.MobileExtras;
+const { TweaksPanel, useTweaks, TweakSection, TweakRadio, TweakSlider, TweakToggle, TweakText } = window;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "homeMode": "magazine",
+  "userAlias": "MARC",
+  "fontScale": 1.05,
+  "darkMode": true,
+  "reduceMotion": false
+}/*EDITMODE-END*/;
+
+// ─── Tab bar — 3 tabs only: HOME · SEARCH · SKILLS
+function TabBar({ active, onTab, dark }) {
+  const items = [
+    { id: 'home',   label: 'HOME',   glyph: '◐' },
+    { id: 'search', label: 'SEARCH', glyph: '⌕' },
+    { id: 'skills', label: 'SKILLS', glyph: '✦' },
+  ];
+  const bg = dark ? 'rgba(15,14,13,0.92)' : 'rgba(245,241,232,0.96)';
+  const border = dark ? 'rgba(245,241,232,0.12)' : 'rgba(15,14,13,0.12)';
+  const muted = dark ? 'rgba(245,241,232,0.45)' : 'rgba(15,14,13,0.45)';
+  return (
+    <div style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 55,
+      background: bg, backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
+      borderTop: `1px solid ${border}`,
+      paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 10px)',
+      paddingTop: 12,
+      display: 'flex', justifyContent: 'space-around',
+    }}>
+      {items.map(it => {
+        const on = active === it.id;
+        return (
+          <button key={it.id} onClick={() => onTab(it.id)}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 10px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              color: on ? '#C9452F' : muted, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.8,
+              minWidth: 64 }}>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>{it.glyph}</span>
+            <span>{it.label}</span>
+            <span style={{ width: 18, height: 2, background: on ? '#C9452F' : 'transparent' }} />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [tab, setTab] = React.useState('home');
+  const [activeHair, setActiveHair] = React.useState(null);
+  const [logOpen, setLogOpen] = React.useState(false);
+  const [logHairId, setLogHairId] = React.useState(null);
+  const [timerHair, setTimerHair] = React.useState(null);
+  const [notesHair, setNotesHair] = React.useState(null);
+
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--cr-fs', String(tweaks.fontScale || 1));
+    document.body.classList.toggle('cr-dark', !!tweaks.darkMode);
+    document.body.classList.toggle('cr-reduce-motion', !!tweaks.reduceMotion);
+  }, [tweaks.fontScale, tweaks.darkMode, tweaks.reduceMotion]);
+
+  const openProfile = (hair) => {
+    window.__activeHair = hair;
+    setActiveHair(hair);
+    setTab('profile');
+  };
+
+  React.useEffect(() => { window.__openProfile = openProfile; }, []);
+
+  const openLog = (hairId) => { setLogHairId(hairId || null); setLogOpen(true); };
+  const openTimer = (hair) => setTimerHair(hair || window.HAIR_DATA.HAIRSTYLES[0]);
+  const openNotes = (hair) => setNotesHair(hair || window.HAIR_DATA.HAIRSTYLES[0]);
+
+  const homeView = tweaks.homeMode === 'magazine'
+    ? <AHome alias={tweaks.userAlias} />
+    : <TodayHome
+        alias={tweaks.userAlias}
+        onOpenStyle={openProfile}
+        onOpenLog={() => openLog()}
+        onOpenTimer={openTimer}
+        onOpenContinue={() => openProfile(window.HAIR_DATA.HAIRSTYLES[0])}
+        onOpenNotes={openNotes}
+      />;
+
+  const screen = {
+    home: homeView,
+    search: <ASearchPanel onSelect={openProfile} />,
+    skills: <AFavorites onOpen={openProfile} alias={tweaks.userAlias} />,
+    profile: <AProfile hair={activeHair} />,
+  }[tab] || homeView;
+
+  const dark = !!tweaks.darkMode;
+  const tabBarH = 'calc(78px + env(safe-area-inset-bottom, 0px))';
+
+  // For tabbar highlight: profile is reached via Search/Skills, so keep last real tab lit
+  const [lastRealTab, setLastRealTab] = React.useState('home');
+  React.useEffect(() => { if (tab !== 'profile') setLastRealTab(tab); }, [tab]);
+  const tabBarActive = tab === 'profile' ? lastRealTab : tab;
+
+  return (
+    <div style={{
+      width: '100%', height: '100%',
+      background: dark ? '#0F0E0D' : A.paper,
+      fontFamily: '-apple-system, system-ui, sans-serif',
+      WebkitFontSmoothing: 'antialiased',
+      position: 'relative',
+    }}>
+      <div key={tab} style={{
+        height: '100%',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        paddingBottom: tabBarH,
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        animation: 'fade .25s ease',
+      }}>
+        {screen}
+      </div>
+
+      <FAB
+        hidden={tab === 'search'}
+        dark={dark}
+        onLog={() => openLog()}
+        onTimer={() => openTimer(activeHair || window.HAIR_DATA.HAIRSTYLES[0])}
+      />
+
+      <LogPracticeSheet open={logOpen} onClose={() => setLogOpen(false)} defaultHairId={logHairId} />
+      <TimerScreen open={!!timerHair} onClose={() => setTimerHair(null)} hair={timerHair} />
+      <NotesSheet open={!!notesHair} onClose={() => setNotesHair(null)} hair={notesHair} />
+
+      <TabBar active={tabBarActive} onTab={setTab} dark={dark} />
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="用戶 · IDENTITY" />
+        <TweakText
+          label="代號 Alias"
+          value={tweaks.userAlias || ''}
+          placeholder="e.g. Vincent"
+          onChange={v => setTweak('userAlias', v)}
+        />
+        <TweakSection label="首頁 · HOME" />
+        <TweakRadio
+          label="Mode"
+          value={tweaks.homeMode}
+          options={['today', 'magazine']}
+          onChange={v => setTweak('homeMode', v)}
+        />
+        <TweakSection label="閱讀 · READING" />
+        <TweakSlider
+          label="Font Size"
+          value={Math.round((tweaks.fontScale || 1) * 100)}
+          min={85} max={125} step={5} unit="%"
+          onChange={v => setTweak('fontScale', v / 100)}
+        />
+        <TweakToggle
+          label="Dark Mode"
+          value={!!tweaks.darkMode}
+          onChange={v => setTweak('darkMode', v)}
+        />
+        <TweakToggle
+          label="Reduce Motion"
+          value={!!tweaks.reduceMotion}
+          onChange={v => setTweak('reduceMotion', v)}
+        />
+      </TweaksPanel>
+
+      <style>{`
+        @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+        [data-ios-status-bar] { display: none !important; }
+      `}</style>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+</script>
+</body>
+</html>

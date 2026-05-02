@@ -348,6 +348,7 @@ function AAliasEditor({ alias, color, onSave, onClose }) {
 
 // ─── Card editor (modal): upload photo + adjust position/zoom + edit labels
 function ACardEditor({ card, onSave, onClose }) {
+  const isFeatured = card.layout === 'featured';
   const [d, setD] = React.useState({
     image: card.image || null,
     imgZoom: card.imgZoom || 1,
@@ -356,7 +357,7 @@ function ACardEditor({ card, onSave, onClose }) {
     number: card.number || '',
     name: card.name || '',
     en: card.en || '',
-    letter: card.letter || '',
+    meta: card.meta || '',
   });
 
   const onPick = (file) => {
@@ -385,6 +386,8 @@ function ACardEditor({ card, onSave, onClose }) {
     reader.readAsDataURL(file);
   };
 
+  const previewH = isFeatured ? 240 : 200;
+
   return (
     <div onClick={onClose} style={{
       position: 'fixed', inset: 0, background: 'rgba(15,14,13,0.7)',
@@ -398,27 +401,44 @@ function ACardEditor({ card, onSave, onClose }) {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
           <span style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: A.muted, textTransform: 'uppercase' }}>
-            EDIT CARD · {card.number}
+            {isFeatured ? 'EDIT FEATURED · 封面' : `EDIT CARD · ${card.number}`}
           </span>
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: A.mono, fontSize: 14, color: A.muted, padding: 4 }}>✕</button>
         </div>
 
-        {/* preview */}
-        <div style={{ height: 200, background: d.image ? '#000' : (card.hero || '#1A1714'), position: 'relative', overflow: 'hidden', marginBottom: 12, border: `1px solid ${A.ink}` }}>
+        {/* preview — 模擬實際版面 */}
+        <div style={{
+          height: previewH,
+          background: d.image ? '#000' : (isFeatured ? `linear-gradient(135deg, ${card.hero || '#2A2620'} 0%, #0F0E0D 100%)` : (card.hero || '#1A1714')),
+          position: 'relative', overflow: 'hidden', marginBottom: 12, border: `1px solid ${A.ink}`,
+        }}>
           {d.image ? (
-            <img src={d.image} alt="" style={{
-              position: 'absolute', inset: 0, width: '100%', height: '100%',
-              objectFit: 'cover',
-              objectPosition: `${d.imgX}% ${d.imgY}%`,
-              transform: `scale(${d.imgZoom})`,
-              transformOrigin: `${d.imgX}% ${d.imgY}%`,
-            }} />
+            <React.Fragment>
+              <img src={d.image} alt="" style={{
+                position: 'absolute', inset: 0, width: '100%', height: '100%',
+                objectFit: 'cover',
+                objectPosition: `${d.imgX}% ${d.imgY}%`,
+                transform: `scale(${d.imgZoom})`,
+                transformOrigin: `${d.imgX}% ${d.imgY}%`,
+              }} />
+              {isFeatured && <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 30%, rgba(0,0,0,0.65) 100%)' }} />}
+            </React.Fragment>
           ) : (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: A.paper, opacity: 0.55, textTransform: 'uppercase' }}>NO IMAGE</div>
           )}
-          {/* 顯示編號 + 字母 預覽 */}
-          {d.number && <div style={{ position: 'absolute', top: 8, left: 8, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: card.accent || A.tan, textShadow: d.image ? '0 1px 2px rgba(0,0,0,0.7)' : 'none' }}>{d.number}</div>}
-          {d.letter && <div style={{ position: 'absolute', bottom: 8, right: 12, fontFamily: A.serif, fontSize: 56, lineHeight: 0.8, color: card.accent || A.tan, fontStyle: 'italic', opacity: 0.9, textShadow: d.image ? '0 2px 4px rgba(0,0,0,0.6)' : 'none' }}>{d.letter}</div>}
+
+          {/* preview overlays */}
+          {isFeatured ? (
+            <React.Fragment>
+              {d.number && <div style={{ position: 'absolute', top: 12, left: 12, fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.paper, textShadow: d.image ? '0 1px 3px rgba(0,0,0,0.7)' : 'none' }}>{d.number}</div>}
+              <div style={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}>
+                {d.en && <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: card.accent || A.tan, textTransform: 'uppercase', textShadow: d.image ? '0 1px 3px rgba(0,0,0,0.7)' : 'none' }}>{d.en}</div>}
+                {d.name && <div style={{ fontFamily: A.serif, fontSize: 26, lineHeight: 0.95, color: A.paper, fontStyle: 'italic', marginTop: 4, whiteSpace: 'pre-line', textShadow: d.image ? '0 2px 6px rgba(0,0,0,0.6)' : 'none' }}>{d.name}</div>}
+              </div>
+            </React.Fragment>
+          ) : (
+            d.number && <div style={{ position: 'absolute', top: 8, left: 8, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: card.accent || A.tan, textShadow: d.image ? '0 1px 2px rgba(0,0,0,0.7)' : 'none' }}>{d.number}</div>
+          )}
         </div>
 
         {/* file picker */}
@@ -451,14 +471,36 @@ function ACardEditor({ card, onSave, onClose }) {
 
         <div style={{ height: 1, background: A.wash, margin: '14px 0' }} />
 
-        <AFieldRow label="編號 NUMBER" value={d.number} maxLength={8}
+        <AFieldRow label="編號 NUMBER" value={d.number} maxLength={isFeatured ? 20 : 8}
           onChange={v => setD(prev => ({ ...prev, number: v }))} />
-        <AFieldRow label="中文標題 NAME" value={d.name} maxLength={20}
-          onChange={v => setD(prev => ({ ...prev, name: v }))} />
+
+        {/* featured 用 textarea (支援多行);classic 用 input */}
+        {isFeatured ? (
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted, marginBottom: 4, textTransform: 'uppercase' }}>
+              中文標題 NAME · 可換行
+            </div>
+            <textarea value={d.name || ''} maxLength={40} rows={2}
+              onChange={e => setD(prev => ({ ...prev, name: e.target.value }))}
+              style={{
+                width: '100%', padding: '8px 10px', resize: 'vertical',
+                fontFamily: A.serif, fontSize: 18, fontStyle: 'italic', lineHeight: 1.2,
+                background: A.wash, border: `1px solid ${A.ink}`, color: A.ink,
+                outline: 'none', boxSizing: 'border-box',
+              }} />
+          </div>
+        ) : (
+          <AFieldRow label="中文標題 NAME" value={d.name} maxLength={20}
+            onChange={v => setD(prev => ({ ...prev, name: v }))} />
+        )}
+
         <AFieldRow label="英文小標 EN" value={d.en} maxLength={40}
           onChange={v => setD(prev => ({ ...prev, en: v }))} />
-        <AFieldRow label="角落字母 LETTER" value={d.letter} maxLength={2}
-          onChange={v => setD(prev => ({ ...prev, letter: v }))} />
+
+        {isFeatured && (
+          <AFieldRow label="底部資訊 META · 例: 12 LESSONS · 45 MIN" value={d.meta} maxLength={40}
+            onChange={v => setD(prev => ({ ...prev, meta: v }))} />
+        )}
 
         <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
           <button onClick={onClose} style={{
@@ -472,6 +514,99 @@ function ACardEditor({ card, onSave, onClose }) {
             fontFamily: A.mono, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase',
           }}>儲存</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Node image lightbox: 全螢幕放大檢視節點圖片
+// 使用 width-based zoom (非 transform) 讓 native scroll 自然處理 panning
+function ANodeImageLightbox({ src, onClose }) {
+  const [zoom, setZoom] = React.useState(1);
+  const scrollRef = React.useRef(null);
+  const prevZoom = React.useRef(1);
+
+  React.useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  // 從 1× 進入 >1× 時把 scroll 置中
+  React.useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (zoom > 1 && prevZoom.current === 1) {
+      requestAnimationFrame(() => {
+        el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+        el.scrollTop = (el.scrollHeight - el.clientHeight) / 2;
+      });
+    }
+    prevZoom.current = zoom;
+  }, [zoom]);
+
+  const toggleZoom = () => setZoom(z => (z === 1 ? 2.5 : 1));
+
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)',
+      zIndex: 10000, display: 'flex', flexDirection: 'column',
+    }}>
+      {/* top bar */}
+      <div onClick={e => e.stopPropagation()} style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '14px 16px', color: A.paper,
+        fontFamily: A.mono, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase',
+        flexShrink: 0,
+      }}>
+        <span>NODE IMAGE · {Math.round(zoom * 100)}%</span>
+        <button onClick={onClose} style={{
+          background: 'transparent', border: `1px solid ${A.paper}`,
+          color: A.paper, padding: '6px 12px',
+          fontFamily: A.mono, fontSize: 11, cursor: 'pointer', letterSpacing: 1.5,
+        }}>✕ CLOSE</button>
+      </div>
+
+      {/* image area */}
+      <div ref={scrollRef}
+        onClick={e => e.stopPropagation()}
+        onDoubleClick={toggleZoom}
+        style={{
+          flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch', minHeight: 0,
+        }}>
+        <div style={{
+          width: zoom === 1 ? '100%' : `${zoom * 100}%`,
+          height: zoom === 1 ? '100%' : 'auto',
+          minHeight: zoom === 1 ? '100%' : 'auto',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 16, boxSizing: 'border-box',
+        }}>
+          <img src={src} alt="" draggable="false" style={{
+            display: 'block',
+            maxWidth: '100%',
+            maxHeight: zoom === 1 ? '100%' : 'none',
+            cursor: zoom === 1 ? 'zoom-in' : 'zoom-out',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+          }} />
+        </div>
+      </div>
+
+      {/* zoom slider */}
+      <div onClick={e => e.stopPropagation()} style={{
+        padding: '12px 20px 22px', display: 'flex', alignItems: 'center', gap: 12,
+        flexShrink: 0,
+      }}>
+        <button onClick={() => setZoom(1)} style={{
+          background: 'transparent', border: `1px solid ${A.paper}`, color: A.paper,
+          padding: '5px 10px', fontFamily: A.mono, fontSize: 9, cursor: 'pointer', letterSpacing: 1.5,
+        }}>FIT</button>
+        <input type="range" min={1} max={5} step={0.1} value={zoom}
+          onChange={e => setZoom(parseFloat(e.target.value))}
+          style={{ flex: 1, accentColor: A.tan }} />
+        <span style={{ fontFamily: A.mono, fontSize: 10, color: A.paper, minWidth: 36, textAlign: 'right', letterSpacing: 1 }}>
+          {zoom.toFixed(1)}×
+        </span>
       </div>
     </div>
   );
@@ -494,25 +629,47 @@ function AHome({ alias }) {
   const [editingAlias, setEditingAlias] = React.useState(false);
   const [editingCardId, setEditingCardId] = React.useState(null);
 
-  // 4 個底卡片(featured + 3 個 classic)的「預設」資料
-  // 用 HAIRSTYLES 動態建構,讓 user override 與資料庫順序解耦
-  const baseCards = HAIRSTYLES.slice(1, 4).map((h, i) => ({
-    id: h.id,
-    number: `N°0${i + 2}`,
-    name: h.name,
-    en: h.en,
-    letter: ['B', 'C', 'D'][i] || '',
-    image: null,
-    imgZoom: 1,
-    imgX: 50,
-    imgY: 50,
-    hero: h.hero,
-    accent: h.accent,
-  }));
+  // 卡片預設資料(featured + 4 個 classics)
+  // featured 是頂部全寬的英雄區塊;classics 是 2-column grid
+  const baseCards = [
+    {
+      id: 'featured',
+      layout: 'featured',
+      number: 'FEATURED · 01',
+      en: 'TEXTURED FRINGE',
+      name: '微分碎蓋的\n十二年演化',
+      meta: '12 LESSONS · 45 MIN',
+      image: null, imgZoom: 1, imgX: 50, imgY: 50,
+      hero: HAIRSTYLES[0].hero,
+      accent: HAIRSTYLES[0].accent,
+    },
+    ...HAIRSTYLES.slice(1, 4).map((h, i) => ({
+      id: h.id,
+      layout: 'classic',
+      number: `N°0${i + 2}`,
+      name: h.name,
+      en: h.en,
+      image: null, imgZoom: 1, imgX: 50, imgY: 50,
+      hero: h.hero,
+      accent: h.accent,
+    })),
+    {
+      id: 'classic5',
+      layout: 'classic',
+      number: 'N°05',
+      name: '自訂髮型',
+      en: 'YOUR STYLE',
+      image: null, imgZoom: 1, imgX: 50, imgY: 50,
+      hero: '#1A1714',
+      accent: A.tan,
+    },
+  ];
   const cards = baseCards.map(base => {
     const saved = (home.cards || []).find(c => c.id === base.id);
     return saved ? { ...base, ...saved } : base;
   });
+  const featuredCard = cards.find(c => c.layout === 'featured');
+  const classicCards = cards.filter(c => c.layout === 'classic');
 
   const updateCard = (id, patch) => {
     const others = (home.cards || []).filter(c => c.id !== id);
@@ -563,26 +720,62 @@ function AHome({ alias }) {
 
       <ADivider label="In this issue" />
 
-      {/* hero article */}
+      {/* hero article — featured card (editable) */}
       <div style={{ padding: '0 20px' }}>
-        <div style={{ position: 'relative', height: 260, background: `linear-gradient(135deg, #2A2620 0%, #0F0E0D 100%)`, overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 40%, rgba(185,148,106,0.35) 0%, transparent 60%)' }} />
-          <div style={{ position: 'absolute', top: 14, left: 14, fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.paper }}>FEATURED · 01</div>
-          <div style={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
-            <div style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: A.tan, textTransform: 'uppercase' }}>TEXTURED FRINGE</div>
-            <div style={{ fontFamily: A.serif, fontSize: 32, lineHeight: 0.95, color: A.paper, fontStyle: 'italic', marginTop: 6 }}>微分碎蓋的<br/>十二年演化</div>
+        <div style={{
+          position: 'relative', height: 260,
+          background: featuredCard.image ? '#000' : `linear-gradient(135deg, ${featuredCard.hero || '#2A2620'} 0%, #0F0E0D 100%)`,
+          overflow: 'hidden',
+        }}>
+          {featuredCard.image ? (
+            <React.Fragment>
+              <img src={featuredCard.image} alt="" style={{
+                position: 'absolute', inset: 0, width: '100%', height: '100%',
+                objectFit: 'cover',
+                objectPosition: `${featuredCard.imgX}% ${featuredCard.imgY}%`,
+                transform: `scale(${featuredCard.imgZoom})`,
+                transformOrigin: `${featuredCard.imgX}% ${featuredCard.imgY}%`,
+              }} />
+              {/* 文字可讀性漸層 */}
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 30%, rgba(0,0,0,0.65) 100%)' }} />
+            </React.Fragment>
+          ) : (
+            <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at 30% 40%, ${(featuredCard.accent || A.tan)}55 0%, transparent 60%)` }} />
+          )}
+          <div style={{ position: 'absolute', top: 14, left: 14, fontFamily: A.mono, fontSize: 9, letterSpacing: 2, color: A.paper, textShadow: featuredCard.image ? '0 1px 3px rgba(0,0,0,0.7)' : 'none' }}>
+            {featuredCard.number}
           </div>
+          <div style={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
+            <div style={{ fontFamily: A.mono, fontSize: 10, letterSpacing: 2, color: featuredCard.accent || A.tan, textTransform: 'uppercase', textShadow: featuredCard.image ? '0 1px 3px rgba(0,0,0,0.7)' : 'none' }}>
+              {featuredCard.en}
+            </div>
+            <div style={{ fontFamily: A.serif, fontSize: 32, lineHeight: 0.95, color: A.paper, fontStyle: 'italic', marginTop: 6, whiteSpace: 'pre-line', textShadow: featuredCard.image ? '0 2px 6px rgba(0,0,0,0.6)' : 'none' }}>
+              {featuredCard.name}
+            </div>
+          </div>
+          {/* edit button */}
+          <button onClick={() => setEditingCardId('featured')}
+            aria-label="編輯封面"
+            style={{
+              position: 'absolute', top: 10, right: 10,
+              width: 30, height: 30, padding: 0,
+              background: 'rgba(15,14,13,0.6)',
+              border: `1px solid rgba(245,241,232,0.7)`,
+              color: A.paper,
+              fontFamily: A.mono, fontSize: 14, lineHeight: 1,
+              cursor: 'pointer',
+            }}>⌬</button>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, color: A.muted, textTransform: 'uppercase' }}>
-          <span>12 LESSONS · 45 MIN</span><span>→ START</span>
+          <span>{featuredCard.meta}</span><span>→ START</span>
         </div>
       </div>
 
-      <ADivider label="The Four Classics" />
+      <ADivider label="The Classics" />
 
       {/* grid of styles — user-customizable */}
       <div style={{ padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-        {cards.map((c) => {
+        {classicCards.map((c) => {
           const accent = c.accent || A.tan;
           return (
             <div key={c.id} style={{ position: 'relative' }}>
@@ -604,12 +797,6 @@ function AHome({ alias }) {
                   color: accent,
                   textShadow: c.image ? '0 1px 2px rgba(0,0,0,0.7)' : 'none',
                 }}>{c.number}</div>
-                <div style={{
-                  position: 'absolute', bottom: 8, right: 8,
-                  fontFamily: A.serif, fontSize: 42, lineHeight: 0.8,
-                  color: accent, fontStyle: 'italic', opacity: 0.9,
-                  textShadow: c.image ? '0 2px 4px rgba(0,0,0,0.6)' : 'none',
-                }}>{c.letter}</div>
                 {/* edit button — top right corner */}
                 <button onClick={() => setEditingCardId(c.id)}
                   aria-label={`編輯卡片 ${c.number}`}
@@ -784,6 +971,7 @@ function ASkillTree({ hair }) {
   }, [storeKey, hair.name]); // eslint-disable-line
 
   const [editingId, setEditingId] = React.useState(null);
+  const [lightboxSrc, setLightboxSrc] = React.useState(null);
 
   // helpers
   const ensureSystemNode = (id, parent, label) => {
@@ -899,35 +1087,59 @@ function ASkillTree({ hair }) {
             })}
           </svg>
 
-          {/* nodes (text-only) */}
+          {/* nodes (text + optional image badge) */}
           {tree.nodes.map(n => {
             const cx = xFor(n.id), cy = yFor(n.id);
             const isRoot = n.id === 'root';
             const isSystem = false; // 所有節點皆可編輯
             const dark = isRoot;
             return (
-              <button key={n.id}
-                onClick={() => onClickNode(n)}
-                style={{
-                  position: 'absolute',
-                  left: cx - NODE_W / 2, top: cy - NODE_H / 2,
-                  width: NODE_W, height: NODE_H,
-                  background: dark ? A.ink : A.paper,
-                  color: dark ? A.paper : A.ink,
-                  border: `1px solid ${dark ? A.ink : (isSystem ? A.ink : A.muted)}`,
-                  boxShadow: dark ? `3px 3px 0 ${A.ink}` : 'none',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', textAlign: 'center', padding: '6px 10px',
-                  fontFamily: 'inherit',
-                }}>
-                <div style={{ fontFamily: A.mono, fontSize: 8, letterSpacing: 1.6, color: dark ? A.tan : A.muted, textTransform: 'uppercase' }}>
-                  {isRoot ? '◆ ROOT' : 'NODE'}
-                </div>
-                <div style={{ fontFamily: A.serif, fontSize: 14, fontStyle: 'italic', lineHeight: 1.1, marginTop: 2,
-                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                  {n.label || '—'}
-                </div>
-              </button>
+              <div key={n.id} style={{
+                position: 'absolute',
+                left: cx - NODE_W / 2, top: cy - NODE_H / 2,
+                width: NODE_W, height: NODE_H,
+              }}>
+                <button
+                  onClick={() => onClickNode(n)}
+                  style={{
+                    width: '100%', height: '100%',
+                    background: dark ? A.ink : A.paper,
+                    color: dark ? A.paper : A.ink,
+                    border: `1px solid ${dark ? A.ink : (isSystem ? A.ink : A.muted)}`,
+                    boxShadow: dark ? `3px 3px 0 ${A.ink}` : 'none',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', textAlign: 'center', padding: '6px 10px',
+                    fontFamily: 'inherit',
+                  }}>
+                  <div style={{ fontFamily: A.mono, fontSize: 8, letterSpacing: 1.6, color: dark ? A.tan : A.muted, textTransform: 'uppercase' }}>
+                    {isRoot ? '◆ ROOT' : 'NODE'}
+                  </div>
+                  <div style={{ fontFamily: A.serif, fontSize: 14, fontStyle: 'italic', lineHeight: 1.1, marginTop: 2,
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                    {n.label || '—'}
+                  </div>
+                </button>
+                {/* image badge — appears top-right when node has an image; click → lightbox */}
+                {n.image && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setLightboxSrc(n.image); }}
+                    aria-label="放大檢視圖片"
+                    title="點擊放大圖片"
+                    style={{
+                      position: 'absolute', top: -10, right: -10,
+                      width: 30, height: 30, padding: 0,
+                      background: A.paper, border: `1.5px solid ${A.ink}`,
+                      boxShadow: `2px 2px 0 ${A.ink}`,
+                      cursor: 'pointer', overflow: 'hidden',
+                      borderRadius: 0,
+                    }}>
+                    <img src={n.image} alt="" style={{
+                      width: '100%', height: '100%',
+                      objectFit: 'cover', display: 'block',
+                    }} />
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>
@@ -952,15 +1164,36 @@ function ASkillTree({ hair }) {
               style={{ width: '100%', padding: '8px 10px', marginBottom: 10, fontFamily: A.serif, fontSize: 18, fontStyle: 'italic', background: A.wash, border: `1px solid ${A.ink}`, color: A.ink, outline: 'none' }} />
             <div style={{ fontFamily: A.mono, fontSize: 9, letterSpacing: 1.6, color: A.muted, marginBottom: 6, textTransform: 'uppercase' }}>圖片 · IMAGE</div>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              <div style={{ width: 80, height: 80, border: `1px solid ${A.muted}`, background: n.image ? '#000' : A.wash, overflow: 'hidden', flexShrink: 0 }}>
-                {n.image && <img src={n.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-              </div>
+              {n.image ? (
+                <button
+                  onClick={() => setLightboxSrc(n.image)}
+                  title="點擊放大"
+                  style={{
+                    width: 80, height: 80, padding: 0,
+                    border: `1px solid ${A.muted}`, background: '#000',
+                    overflow: 'hidden', flexShrink: 0, cursor: 'zoom-in',
+                    position: 'relative',
+                  }}>
+                  <img src={n.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  <span style={{
+                    position: 'absolute', bottom: 2, right: 2,
+                    background: 'rgba(15,14,13,0.75)', color: A.paper,
+                    fontFamily: A.mono, fontSize: 8, letterSpacing: 1, padding: '1px 4px',
+                  }}>⊕</span>
+                </button>
+              ) : (
+                <div style={{ width: 80, height: 80, border: `1px solid ${A.muted}`, background: A.wash, overflow: 'hidden', flexShrink: 0 }} />
+              )}
               <div style={{ flex: 1 }}>
                 <input type="file" accept="image/*" onChange={e => onPickNodeImage(n.id, e.target.files && e.target.files[0])}
                   style={{ fontFamily: A.mono, fontSize: 11, color: A.ink }} />
                 {n.image && (
-                  <button onClick={() => updateNode(n.id, { image: null })}
-                    style={{ marginTop: 8, padding: '4px 10px', background: 'transparent', border: `1px solid ${A.muted}`, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, cursor: 'pointer', color: A.muted, textTransform: 'uppercase' }}>移除圖片</button>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                    <button onClick={() => setLightboxSrc(n.image)}
+                      style={{ padding: '4px 10px', background: A.ink, color: A.paper, border: 'none', fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, cursor: 'pointer', textTransform: 'uppercase' }}>⊕ 放大</button>
+                    <button onClick={() => updateNode(n.id, { image: null })}
+                      style={{ padding: '4px 10px', background: 'transparent', border: `1px solid ${A.muted}`, fontFamily: A.mono, fontSize: 9, letterSpacing: 1.5, cursor: 'pointer', color: A.muted, textTransform: 'uppercase' }}>移除</button>
+                  </div>
                 )}
               </div>
             </div>
@@ -973,6 +1206,11 @@ function ASkillTree({ hair }) {
           </div>
         );
       })()}
+
+      {/* ── Image Lightbox ── */}
+      {lightboxSrc && (
+        <ANodeImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+      )}
     </div>
   );
 }

@@ -939,15 +939,25 @@ function ASkillTree({ hair }) {
     if (!data || !Array.isArray(data.nodes) || data.nodes.length === 0) {
       return { nodes: [{ id: 'root', parent: null, label: hairName }] };
     }
+    // 偵測污染:root.label 與當前髮型不符 → 整份丟棄(這是別的髮型被誤寫進來的)
+    const root = data.nodes.find(n => n.id === 'root');
+    if (root && root.label && root.label !== hairName) {
+      return { nodes: [{ id: 'root', parent: null, label: hairName }] };
+    }
     const nodes = data.nodes.map(n =>
       n.id === 'root' ? { ...n, label: hairName, parent: null } : n
     );
-    // 確保有 root，沒有就補
     if (!nodes.some(n => n.id === 'root')) {
       nodes.unshift({ id: 'root', parent: null, label: hairName });
     }
     return { ...data, nodes };
   };
+
+  // 解決切換髮型時的 race condition:
+  // 兩個 effect 都依賴 storeKey,當 storeKey 改變時都會觸發。
+  // 但「儲存 effect」比「讀取 effect」先跑,會把舊髮型的 tree 寫進新髮型的 key。
+  // 用 ref 追蹤「目前 tree 是哪個 storeKey 的」,只在一致時才允許寫入。
+  const currentKey = React.useRef(storeKey);
 
   const [tree, setTree] = React.useState(() => {
     try {
@@ -958,6 +968,8 @@ function ASkillTree({ hair }) {
   });
 
   React.useEffect(() => {
+    // 切換髮型瞬間:currentKey.current 還是上一個髮型的 key,擋掉避免污染新 key
+    if (currentKey.current !== storeKey) return;
     try { localStorage.setItem(storeKey, JSON.stringify(tree)); } catch {}
   }, [tree, storeKey]);
 
@@ -968,6 +980,7 @@ function ASkillTree({ hair }) {
     } catch {
       setTree(seed);
     }
+    currentKey.current = storeKey; // 標記:tree 接下來會更新成此 key 的內容
   }, [storeKey, hair.name]); // eslint-disable-line
 
   const [editingId, setEditingId] = React.useState(null);

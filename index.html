@@ -5026,6 +5026,17 @@ window.LUZ_LIBRARY = [
     hair
   }) {
     const storeKey = `cuttingroom_skilltree_${hair.id}`;
+    const [isUnlocked, setIsUnlocked] = React.useState(() => !!(window.HairCerts && window.HairCerts.isUnlocked(hair)));
+    React.useEffect(() => {
+      setIsUnlocked(!!(window.HairCerts && window.HairCerts.isUnlocked(hair)));
+      const onUnlockChange = e => {
+        if (!e.detail || e.detail.hairId === hair.id) {
+          setIsUnlocked(!!(window.HairCerts && window.HairCerts.isUnlocked(hair)));
+        }
+      };
+      window.addEventListener('cuttingroom:unlock-changed', onUnlockChange);
+      return () => window.removeEventListener('cuttingroom:unlock-changed', onUnlockChange);
+    }, [hair.id]);
     const seed = React.useMemo(() => ({
       nodes: [{
         id: 'root',
@@ -5246,7 +5257,7 @@ window.LUZ_LIBRARY = [
       if (!p) return BOARD_H - ROW_H / 2;
       return BOARD_H - (p.row * ROW_H + ROW_H / 2);
     };
-    return /*#__PURE__*/React.createElement("div", {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(window.AchievementUI.TaskBoard, { hair: hair, unlocked: isUnlocked, onUnlock: () => setIsUnlocked(true) }), /*#__PURE__*/React.createElement("div", {
       style: {
         padding: '0 20px'
       }
@@ -5558,20 +5569,23 @@ window.LUZ_LIBRARY = [
           marginTop: 14
         }
       }, /*#__PURE__*/React.createElement("button", {
-        onClick: () => addChild(n.id),
+        onClick: () => { if (n.id === 'root' && !isUnlocked) return; addChild(n.id); },
+        disabled: n.id === 'root' && !isUnlocked,
+        title: (n.id === 'root' && !isUnlocked) ? '請先完成「基礎練習」任務以解鎖' : '',
         style: {
           flex: 1,
           padding: '10px 12px',
-          background: A.ink,
+          background: (n.id === 'root' && !isUnlocked) ? A.muted : A.ink,
           color: A.paper,
           border: 'none',
-          cursor: 'pointer',
+          cursor: (n.id === 'root' && !isUnlocked) ? 'not-allowed' : 'pointer',
           fontFamily: A.mono,
           fontSize: 10,
           letterSpacing: 2,
-          textTransform: 'uppercase'
+          textTransform: 'uppercase',
+          opacity: (n.id === 'root' && !isUnlocked) ? 0.6 : 1
         }
-      }, "+ \u65B0\u589E\u5B50\u7BC0\u9EDE"), /*#__PURE__*/React.createElement("button", {
+      }, (n.id === 'root' && !isUnlocked) ? "\uD83D\uDD12 \u5F85\u89E3\u9396" : "+ \u65B0\u589E\u5B50\u7BC0\u9EDE"), /*#__PURE__*/React.createElement("button", {
         onClick: () => removeNode(n.id),
         style: {
           padding: '10px 12px',
@@ -5588,7 +5602,7 @@ window.LUZ_LIBRARY = [
     })(), lightboxSrc && /*#__PURE__*/React.createElement(ANodeImageLightbox, {
       src: lightboxSrc,
       onClose: () => setLightboxSrc(null)
-    }));
+    })));
   }
 
   // ─── Screen 03 · Text steps
@@ -6266,6 +6280,7 @@ window.LUZ_LIBRARY = [
     alias
   }) {
     const [favs, setFavs] = React.useState(loadFavs);
+    const [activeCert, setActiveCert] = React.useState(null);
     React.useEffect(() => {
       const refresh = () => setFavs(loadFavs());
       window.addEventListener('cuttingroom:favs-changed', refresh);
@@ -6310,7 +6325,7 @@ window.LUZ_LIBRARY = [
         marginTop: 14,
         textTransform: 'uppercase'
       }
-    }, favs.length, " SKILLS \xB7 CURATED BY YOU")), /*#__PURE__*/React.createElement(ADivider, {
+    }, favs.length, " SKILLS \xB7 CURATED BY YOU")), /*#__PURE__*/React.createElement(window.AchievementUI.CertCarousel, { onOpen: c => setActiveCert(c) }), /*#__PURE__*/React.createElement(ADivider, {
       label: favs.length ? 'Index' : 'Empty Vault'
     }), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -6392,7 +6407,7 @@ window.LUZ_LIBRARY = [
         color: A.ink,
         paddingLeft: 6
       }
-    }, "\u2192")))));
+    }, "\u2192")))), activeCert && /*#__PURE__*/React.createElement(window.AchievementUI.CertLightbox, { cert: activeCert, onClose: () => setActiveCert(null) }));
   }
   window.VariantA = {
     AHome,
@@ -6403,6 +6418,791 @@ window.LUZ_LIBRARY = [
     AWorks,
     ARewards,
     A
+  };
+})();
+
+// ── achievements.jsx — Task & Certificate system ──
+;(function(){
+  const A = (window.VariantA && window.VariantA.A) || {
+    ink:'#0F0E0D', paper:'#F5F1E8', tan:'#B8946A', rule:'#0F0E0D',
+    muted:'#5A544B', wash:'#EBE4D4', accent:'#C9452F',
+    serif:'"Playfair Display", "Didot", "Bodoni MT", Georgia, serif',
+    sans:'"Inter Tight", "Helvetica Neue", system-ui, sans-serif',
+    mono:'"JetBrains Mono", "SF Mono", ui-monospace, monospace',
+  };
+  const h = React.createElement;
+  const DEFAULT_TARGET = 10;
+
+  // ─── Storage helpers
+  const K = {
+    migrated: 'cuttingroom_v2_achievements_migrated',
+    tasks: id => `cuttingroom_tasks_${id}`,
+    unlocked: id => `cuttingroom_unlocked_${id}`,
+    certs: 'cuttingroom_certificates',
+  };
+
+  function safeLoad(key, fallback){
+    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    catch { return fallback; }
+  }
+  function safeSave(key, val){
+    try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+    catch(e){ console.warn('[achievements] storage full', e); return false; }
+  }
+
+  // ─── One-time migration: clear all existing skill trees so root is locked again
+  (function migrate(){
+    if (localStorage.getItem(K.migrated)) return;
+    try {
+      const keysToRemove = [];
+      for (let i=0; i<localStorage.length; i++){
+        const k = localStorage.key(i);
+        if (k && k.startsWith('cuttingroom_skilltree_')) keysToRemove.push(k);
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+      localStorage.setItem(K.migrated, '1');
+    } catch(e){ /* ignore */ }
+  })();
+
+  // ─── Image compression: max 800px wide, JPEG 80%
+  function compressImage(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX = 800;
+          let w = img.width, hgt = img.height;
+          if (w > MAX){ hgt = Math.round(hgt * MAX / w); w = MAX; }
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = hgt;
+          const ctx = cv.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, hgt);
+          resolve(cv.toDataURL('image/jpeg', 0.8));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ─── Tasks API
+  function defaultTaskFor(hair){
+    return {
+      id: 't_default_' + hair.id,
+      hairId: hair.id,
+      name: '基礎練習',
+      target: DEFAULT_TARGET,
+      photos: [],
+      isDefault: true,
+      done: false,
+      doneAt: null,
+    };
+  }
+
+  const HairTasks = {
+    list(hair){
+      const stored = safeLoad(K.tasks(hair.id), null);
+      if (!stored || !Array.isArray(stored) || stored.length === 0){
+        const seed = [defaultTaskFor(hair)];
+        safeSave(K.tasks(hair.id), seed);
+        return seed;
+      }
+      // ensure default exists
+      if (!stored.some(t => t.isDefault)) stored.unshift(defaultTaskFor(hair));
+      return stored;
+    },
+    save(hair, tasks){
+      safeSave(K.tasks(hair.id), tasks);
+      window.dispatchEvent(new CustomEvent('cuttingroom:tasks-changed', { detail: { hairId: hair.id } }));
+    },
+    addCustom(hair, name, target){
+      const tasks = HairTasks.list(hair);
+      tasks.push({
+        id: 't_' + Math.random().toString(36).slice(2, 9),
+        hairId: hair.id,
+        name: name || '新任務',
+        target: Math.max(1, Math.min(20, parseInt(target, 10) || DEFAULT_TARGET)),
+        photos: [],
+        isDefault: false,
+        done: false,
+        doneAt: null,
+      });
+      HairTasks.save(hair, tasks);
+      return tasks;
+    },
+    remove(hair, taskId){
+      const tasks = HairTasks.list(hair).filter(t => t.id !== taskId || t.isDefault);
+      HairTasks.save(hair, tasks);
+      return tasks;
+    },
+    addPhoto(hair, taskId, dataUrl){
+      const tasks = HairTasks.list(hair);
+      const t = tasks.find(x => x.id === taskId);
+      if (!t || t.done) return { tasks, justCompleted: null };
+      if (t.photos.length >= t.target) return { tasks, justCompleted: null };
+      t.photos.push(dataUrl);
+      let justCompleted = null;
+      if (t.photos.length >= t.target){
+        t.done = true;
+        t.doneAt = new Date().toISOString();
+        justCompleted = t;
+      }
+      HairTasks.save(hair, tasks);
+      return { tasks, justCompleted };
+    },
+    removePhoto(hair, taskId, index){
+      const tasks = HairTasks.list(hair);
+      const t = tasks.find(x => x.id === taskId);
+      if (!t || t.done) return tasks;
+      t.photos.splice(index, 1);
+      HairTasks.save(hair, tasks);
+      return tasks;
+    },
+    clearPhotos(hair, taskId){
+      const tasks = HairTasks.list(hair);
+      const t = tasks.find(x => x.id === taskId);
+      if (!t) return tasks;
+      t.photos = [];
+      HairTasks.save(hair, tasks);
+      return tasks;
+    },
+  };
+
+  // ─── Certificates API
+  const HairCerts = {
+    list(){ return safeLoad(K.certs, []); },
+    issue(hair, task){
+      const all = HairCerts.list();
+      const serial = String(all.length + 1).padStart(3, '0');
+      const cert = {
+        id: 'c_' + Math.random().toString(36).slice(2, 9),
+        serial,
+        hairId: hair.id,
+        hairName: hair.name,
+        hairEn: hair.en || '',
+        hairEra: hair.era || '',
+        taskName: task.name,
+        target: task.target,
+        unlockedAt: new Date().toISOString(),
+      };
+      all.unshift(cert);
+      safeSave(K.certs, all);
+      window.dispatchEvent(new CustomEvent('cuttingroom:certs-changed'));
+      return cert;
+    },
+    unlockTree(hair){
+      safeSave(K.unlocked(hair.id), true);
+      window.dispatchEvent(new CustomEvent('cuttingroom:unlock-changed', { detail: { hairId: hair.id } }));
+    },
+    isUnlocked(hair){ return !!safeLoad(K.unlocked(hair.id), false); },
+  };
+
+  // ─── UI: TaskBoard — main interactive section, shown above SkillTree
+  function TaskBoard({ hair, unlocked, onUnlock }){
+    const [tasks, setTasks] = React.useState(() => HairTasks.list(hair));
+    const [busy, setBusy] = React.useState(false);
+    const [showNew, setShowNew] = React.useState(false);
+    const [unlockCert, setUnlockCert] = React.useState(null);
+    const fileInputs = React.useRef({});
+
+    React.useEffect(() => {
+      setTasks(HairTasks.list(hair));
+    }, [hair.id]);
+
+    React.useEffect(() => {
+      const refresh = (e) => {
+        if (!e.detail || e.detail.hairId === hair.id) setTasks(HairTasks.list(hair));
+      };
+      window.addEventListener('cuttingroom:tasks-changed', refresh);
+      return () => window.removeEventListener('cuttingroom:tasks-changed', refresh);
+    }, [hair.id]);
+
+    const handleFiles = async (taskId, files) => {
+      if (!files || !files.length) return;
+      setBusy(true);
+      try {
+        for (const f of Array.from(files)){
+          const dataUrl = await compressImage(f);
+          const { tasks: newTasks, justCompleted } = HairTasks.addPhoto(hair, taskId, dataUrl);
+          setTasks(newTasks);
+          if (justCompleted){
+            const cert = HairCerts.issue(hair, justCompleted);
+            if (justCompleted.isDefault) HairCerts.unlockTree(hair);
+            setUnlockCert({ cert, isFirstUnlock: justCompleted.isDefault });
+            // clear photos after unlock (save storage)
+            setTimeout(() => {
+              HairTasks.clearPhotos(hair, taskId);
+              setTasks(HairTasks.list(hair));
+            }, 100);
+            break; // stop processing further files after unlock
+          }
+        }
+      } catch(e){
+        alert('照片處理失敗：' + (e && e.message ? e.message : '請再試一次'));
+      } finally {
+        setBusy(false);
+      }
+    };
+
+    const handleRemovePhoto = (taskId, idx) => {
+      const newTasks = HairTasks.removePhoto(hair, taskId, idx);
+      setTasks(newTasks);
+    };
+
+    const handleDeleteTask = (taskId) => {
+      if (!confirm('確定刪除這個任務？已上傳的練習照片會一起清掉。')) return;
+      const newTasks = HairTasks.remove(hair, taskId);
+      setTasks(newTasks);
+    };
+
+    return h('div', { style:{ padding:'0 20px', marginBottom:24 } },
+      // Section header
+      h('div', { style:{
+        display:'flex', justifyContent:'space-between', alignItems:'baseline',
+        fontFamily:A.mono, fontSize:9, letterSpacing:1.6, color:A.muted,
+        marginBottom:10, textTransform:'uppercase',
+      }},
+        h('span', null, '◐ Training · 練習任務'),
+        h('span', null, tasks.filter(t => t.done).length, '/', tasks.length, ' done'),
+      ),
+
+      // Unlock status banner
+      !unlocked && h('div', {
+        style:{
+          background: A.ink, color: A.paper, padding:'14px 16px', marginBottom:14,
+          borderLeft: `4px solid ${A.tan}`,
+        }
+      },
+        h('div', { style:{ fontFamily:A.mono, fontSize:9, letterSpacing:2, color:A.tan, textTransform:'uppercase', marginBottom:4 } },
+          '🔒 LOCKED',
+        ),
+        h('div', { style:{ fontFamily:A.serif, fontSize:15, fontStyle:'italic', lineHeight:1.4 } },
+          '完成「基礎練習」任務即可解鎖 Skill Tree 並獲得首張結帳單。',
+        ),
+      ),
+      unlocked && h('div', {
+        style:{
+          background: A.wash, padding:'10px 14px', marginBottom:14,
+          borderLeft: `4px solid ${A.tan}`, display:'flex', alignItems:'baseline', gap:8,
+        }
+      },
+        h('span', { style:{ fontFamily:A.mono, fontSize:9, letterSpacing:2, color:A.tan, textTransform:'uppercase' } }, '✓ QUALIFIED'),
+        h('span', { style:{ fontFamily:A.serif, fontSize:13, fontStyle:'italic', color:A.ink } }, '已通過此髮型的執業認證'),
+      ),
+
+      // Tasks list
+      tasks.map(task => h(TaskCard, {
+        key: task.id,
+        task,
+        busy,
+        onPickFiles: (files) => handleFiles(task.id, files),
+        onRemovePhoto: (idx) => handleRemovePhoto(task.id, idx),
+        onDelete: () => handleDeleteTask(task.id),
+        fileRef: (el) => { fileInputs.current[task.id] = el; },
+      })),
+
+      // Add custom task
+      !showNew && h('button', {
+        onClick: () => setShowNew(true),
+        style:{
+          width:'100%', padding:'14px', marginTop:6,
+          background:'transparent', color:A.ink,
+          border:`1px dashed ${A.muted}`, cursor:'pointer',
+          fontFamily:A.mono, fontSize:10, letterSpacing:2, textTransform:'uppercase',
+        }
+      }, '+ 新增自訂任務'),
+      showNew && h(NewTaskForm, {
+        onAdd: (name, target) => {
+          HairTasks.addCustom(hair, name, target);
+          setTasks(HairTasks.list(hair));
+          setShowNew(false);
+        },
+        onCancel: () => setShowNew(false),
+      }),
+
+      // Unlock overlay
+      unlockCert && h(UnlockOverlay, {
+        cert: unlockCert.cert,
+        isFirstUnlock: unlockCert.isFirstUnlock,
+        onClose: () => {
+          setUnlockCert(null);
+          if (unlockCert.isFirstUnlock && onUnlock) onUnlock();
+        },
+      }),
+    );
+  }
+
+  // ─── UI: TaskCard
+  function TaskCard({ task, busy, onPickFiles, onRemovePhoto, onDelete }){
+    const inputRef = React.useRef(null);
+    const isDone = task.done;
+    const progress = isDone ? task.target : task.photos.length;
+    const slots = Array.from({ length: task.target }, (_, i) => i);
+
+    return h('div', {
+      style:{
+        border: `1px solid ${isDone ? A.tan : A.ink}`,
+        background: isDone ? A.wash : A.paper,
+        padding:'14px 16px', marginBottom:12,
+        position:'relative',
+      }
+    },
+      // Header row
+      h('div', { style:{ display:'flex', alignItems:'baseline', justifyContent:'space-between', gap:8, marginBottom:10 } },
+        h('div', { style:{ flex:1, minWidth:0 } },
+          h('div', { style:{ fontFamily:A.mono, fontSize:9, letterSpacing:2, color: isDone ? A.tan : A.muted, textTransform:'uppercase' } },
+            task.isDefault ? 'DEFAULT TASK' : 'CUSTOM TASK',
+          ),
+          h('div', { style:{ fontFamily:A.serif, fontSize:20, fontStyle:'italic', lineHeight:1.1, marginTop:2 } },
+            task.name,
+          ),
+        ),
+        h('div', { style:{ fontFamily:A.serif, fontSize:24, fontStyle:'italic', color:A.tan, lineHeight:1 } },
+          progress, h('span', { style:{ color:A.muted, fontSize:14 } }, '/', task.target),
+        ),
+      ),
+
+      // Progress bar
+      h('div', { style:{ height:2, background:A.wash, marginBottom:12, position:'relative', overflow:'hidden' } },
+        h('div', { style:{
+          position:'absolute', left:0, top:0, bottom:0,
+          width: `${Math.min(100, (progress / task.target) * 100)}%`,
+          background: isDone ? A.tan : A.ink,
+          transition: 'width 0.4s ease',
+        }}),
+      ),
+
+      // Photo slots grid (5 cols)
+      h('div', { style:{ display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:6, marginBottom: isDone ? 0 : 10 } },
+        slots.map(i => {
+          const photo = task.photos[i];
+          if (photo){
+            return h('div', { key:i, style:{
+              aspectRatio:'1', background:`url(${photo}) center/cover`,
+              border:`1px solid ${A.ink}`, position:'relative',
+            }},
+              !isDone && h('button', {
+                onClick: () => onRemovePhoto(i),
+                title:'移除這張',
+                style:{
+                  position:'absolute', top:-6, right:-6, width:20, height:20, padding:0,
+                  background:A.ink, color:A.paper, border:`1px solid ${A.ink}`,
+                  cursor:'pointer', fontFamily:A.mono, fontSize:11, lineHeight:1,
+                  borderRadius:0,
+                }
+              }, '×'),
+            );
+          }
+          return h('div', { key:i, style:{
+            aspectRatio:'1',
+            border:`1px dashed ${A.muted}`,
+            background:A.wash,
+            display:'flex', alignItems:'center', justifyContent:'center',
+            fontFamily:A.mono, fontSize:14, color:A.muted, opacity:0.5,
+          }}, String(i+1).padStart(2,'0'));
+        }),
+      ),
+
+      // Upload / Delete row
+      !isDone && h('div', { style:{ display:'flex', gap:8 } },
+        h('input', {
+          ref: inputRef,
+          type:'file', accept:'image/*', multiple: true,
+          style:{ display:'none' },
+          onChange: e => { onPickFiles(e.target.files); e.target.value = ''; },
+        }),
+        h('button', {
+          onClick: () => inputRef.current && inputRef.current.click(),
+          disabled: busy,
+          style:{
+            flex:1, padding:'10px 12px',
+            background: busy ? A.muted : A.ink,
+            color: A.paper, border:'none',
+            cursor: busy ? 'wait' : 'pointer',
+            fontFamily:A.mono, fontSize:10, letterSpacing:2, textTransform:'uppercase',
+          }
+        }, busy ? '處理中…' : '+ 上傳練習照'),
+        !task.isDefault && h('button', {
+          onClick: onDelete,
+          style:{
+            padding:'10px 12px',
+            background:'transparent', color:A.accent,
+            border:`1px solid ${A.accent}`, cursor:'pointer',
+            fontFamily:A.mono, fontSize:10, letterSpacing:2, textTransform:'uppercase',
+          }
+        }, '刪除'),
+      ),
+
+      // Done badge
+      isDone && h('div', { style:{
+        marginTop:8, fontFamily:A.mono, fontSize:9, letterSpacing:2,
+        color:A.tan, textTransform:'uppercase',
+      }}, '✓ Completed · 已歸檔於收藏'),
+    );
+  }
+
+  // ─── UI: NewTaskForm
+  function NewTaskForm({ onAdd, onCancel }){
+    const [name, setName] = React.useState('');
+    const [target, setTarget] = React.useState(10);
+    const submit = () => {
+      const n = name.trim();
+      if (!n){ alert('請輸入任務名稱'); return; }
+      onAdd(n, target);
+    };
+    return h('div', {
+      style:{
+        border:`1px solid ${A.ink}`, background:A.paper,
+        padding:14, marginTop:6, marginBottom:12,
+      }
+    },
+      h('div', { style:{ fontFamily:A.mono, fontSize:9, letterSpacing:2, color:A.muted, textTransform:'uppercase', marginBottom:10 } },
+        'New Custom Task',
+      ),
+      h('input', {
+        value: name,
+        onChange: e => setName(e.target.value),
+        placeholder: '任務名稱（例：不同角度拍 3 張）',
+        style:{
+          width:'100%', padding:'10px 12px', marginBottom:10,
+          fontFamily:A.serif, fontSize:16, fontStyle:'italic',
+          background:A.wash, border:`1px solid ${A.ink}`,
+          color:A.ink, outline:'none',
+        },
+      }),
+      h('div', { style:{ display:'flex', gap:10, alignItems:'center', marginBottom:12 } },
+        h('span', { style:{ fontFamily:A.mono, fontSize:10, letterSpacing:1.6, color:A.muted, textTransform:'uppercase' } },
+          '需求張數',
+        ),
+        h('input', {
+          type:'number', min:1, max:20,
+          value: target,
+          onChange: e => setTarget(parseInt(e.target.value, 10) || 1),
+          style:{
+            width:60, padding:'6px 10px',
+            fontFamily:A.mono, fontSize:14,
+            background:A.wash, border:`1px solid ${A.ink}`,
+            color:A.ink, outline:'none', textAlign:'center',
+          },
+        }),
+        h('span', { style:{ fontFamily:A.mono, fontSize:10, color:A.muted } }, '(1–20)'),
+      ),
+      h('div', { style:{ display:'flex', gap:8 } },
+        h('button', {
+          onClick: submit,
+          style:{
+            flex:1, padding:'10px',
+            background:A.ink, color:A.paper, border:'none', cursor:'pointer',
+            fontFamily:A.mono, fontSize:10, letterSpacing:2, textTransform:'uppercase',
+          }
+        }, '建立任務'),
+        h('button', {
+          onClick: onCancel,
+          style:{
+            padding:'10px 14px',
+            background:'transparent', color:A.muted,
+            border:`1px solid ${A.muted}`, cursor:'pointer',
+            fontFamily:A.mono, fontSize:10, letterSpacing:2, textTransform:'uppercase',
+          }
+        }, '取消'),
+      ),
+    );
+  }
+
+  // ─── UI: UnlockOverlay — animation when task completes
+  function UnlockOverlay({ cert, isFirstUnlock, onClose }){
+    const [phase, setPhase] = React.useState(0);
+    React.useEffect(() => {
+      const t1 = setTimeout(() => setPhase(1), 50);
+      const t2 = setTimeout(() => setPhase(2), 600);
+      const t3 = setTimeout(() => setPhase(3), 1400);
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    }, []);
+
+    return h('div', {
+      onClick: onClose,
+      style:{
+        position:'fixed', inset:0, zIndex:9999,
+        background: phase >= 1 ? 'rgba(15,14,13,0.92)' : 'rgba(15,14,13,0)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        transition: 'background 0.5s ease',
+        padding: 20,
+        cursor: 'pointer',
+      }
+    },
+      // Radial glow
+      h('div', {
+        style:{
+          position:'absolute', inset:0,
+          background: `radial-gradient(circle at center, ${A.tan}33 0%, transparent 60%)`,
+          opacity: phase >= 2 ? 1 : 0,
+          transition: 'opacity 0.8s ease',
+        }
+      }),
+
+      // Certificate paper
+      h('div', {
+        onClick: e => e.stopPropagation(),
+        style:{
+          position:'relative',
+          width:'min(360px, 92vw)',
+          background: A.paper,
+          padding:'32px 28px 24px',
+          transform: phase >= 2 ? 'scale(1) rotate(-1.2deg)' : 'scale(0.4) rotate(-15deg)',
+          opacity: phase >= 2 ? 1 : 0,
+          transition: 'all 0.7s cubic-bezier(.18,.89,.32,1.28)',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.5), 0 6px 18px rgba(0,0,0,0.3)',
+          cursor: 'default',
+        }
+      }, h(CertView, { cert, large: true, showStamp: phase >= 3, isFirstUnlock })),
+
+      // Tap to dismiss hint
+      h('div', {
+        style:{
+          position:'absolute', bottom: 30, left:0, right:0,
+          textAlign:'center',
+          fontFamily:A.mono, fontSize:9, letterSpacing:3,
+          color: A.tan,
+          opacity: phase >= 3 ? 0.7 : 0,
+          transition: 'opacity 0.6s ease 0.3s',
+          textTransform:'uppercase',
+        }
+      }, '↳ 點擊任意處關閉'),
+    );
+  }
+
+  // ─── UI: CertView — the receipt-style certificate
+  function CertView({ cert, large, showStamp = true, isFirstUnlock = false }){
+    const date = new Date(cert.unlockedAt);
+    const dateStr = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')}`;
+    const timeStr = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+    const fs = large ? 1 : 0.62; // scale factor
+    const px = n => Math.round(n * fs);
+
+    return h('div', {
+      style:{
+        position:'relative',
+        fontFamily:A.serif,
+        color:A.ink,
+        overflow:'hidden',
+      }
+    },
+      // Top: brand
+      h('div', { style:{ textAlign:'center', borderBottom:`1px solid ${A.ink}`, paddingBottom:px(12), marginBottom:px(14) } },
+        h('div', { style:{ fontFamily:A.mono, fontSize:px(8), letterSpacing:px(3), color:A.muted, textTransform:'uppercase' } },
+          'LUZ STYLE · The Salon',
+        ),
+        h('div', { style:{ fontFamily:A.serif, fontSize:px(26), fontStyle:'italic', lineHeight:1, marginTop:px(6), letterSpacing:-0.5 } },
+          'Receipt',
+        ),
+        h('div', { style:{ fontFamily:A.mono, fontSize:px(8), letterSpacing:px(2.4), color:A.tan, marginTop:px(4), textTransform:'uppercase' } },
+          isFirstUnlock ? '· Qualification Certificate ·' : '· Practice Voucher ·',
+        ),
+      ),
+
+      // Body: dotted rows like a receipt
+      h('div', { style:{ marginBottom:px(14) } },
+        ReceiptRow({ label:'STYLE', value: cert.hairName, px, large, italic:true }),
+        cert.hairEn && ReceiptRow({ label:'EN', value: cert.hairEn, px, large }),
+        cert.hairEra && ReceiptRow({ label:'ERA', value: cert.hairEra, px, large }),
+        ReceiptRow({ label:'TASK', value: cert.taskName, px, large }),
+        ReceiptRow({ label:'PRACTICED', value: `${cert.target} × sessions`, px, large }),
+      ),
+
+      // Date / serial line
+      h('div', { style:{
+        borderTop:`1px dashed ${A.muted}`, borderBottom:`1px dashed ${A.muted}`,
+        padding:`${px(10)}px 0`, marginBottom:px(14),
+        display:'flex', justifyContent:'space-between',
+        fontFamily:A.mono, fontSize:px(9), letterSpacing:px(1.6), color:A.ink,
+      }},
+        h('span', null, dateStr, ' · ', timeStr),
+        h('span', null, '№ ', cert.serial),
+      ),
+
+      // Signature line + stamp
+      h('div', { style:{ position:'relative', paddingTop:px(20), paddingBottom:px(6) } },
+        h('div', { style:{ borderTop:`1px solid ${A.ink}`, width:'60%', marginBottom:px(4) }}),
+        h('div', { style:{ fontFamily:A.mono, fontSize:px(8), letterSpacing:px(1.6), color:A.muted, textTransform:'uppercase' } },
+          'Authorized Stylist',
+        ),
+
+        // Gold wax stamp
+        showStamp && h('div', {
+          style:{
+            position:'absolute', right:0, top:px(8),
+            width:px(78), height:px(78),
+            borderRadius:'50%',
+            border:`${px(2)}px solid ${A.tan}`,
+            color:A.tan,
+            display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+            textAlign:'center',
+            transform: 'rotate(-12deg)',
+            background:'rgba(184,148,106,0.08)',
+            animation: 'luzStamp 0.5s cubic-bezier(.34,1.56,.64,1) both',
+          }
+        },
+          h('div', { style:{ fontFamily:A.mono, fontSize:px(7), letterSpacing:px(1.4), lineHeight:1 } }, 'LUZ'),
+          h('div', { style:{ fontFamily:A.serif, fontSize:px(14), fontStyle:'italic', lineHeight:1, margin:`${px(2)}px 0` } }, 'Paid'),
+          h('div', { style:{ fontFamily:A.mono, fontSize:px(6), letterSpacing:px(1.2), lineHeight:1 } }, 'IN FULL'),
+        ),
+      ),
+
+      // Bottom scallop edge
+      h('div', { style:{
+        marginTop: px(14),
+        height: px(8),
+        background: `radial-gradient(circle at ${px(6)}px 100%, transparent ${px(5)}px, ${A.paper} ${px(5)}px)`,
+        backgroundSize: `${px(12)}px ${px(8)}px`,
+        backgroundRepeat: 'repeat-x',
+        marginLeft: -px(28),
+        marginRight: -px(28),
+        marginBottom: -px(24),
+      }}),
+    );
+  }
+
+  function ReceiptRow({ label, value, px, large, italic }){
+    return h('div', { style:{
+      display:'flex', alignItems:'baseline', gap: px(8),
+      marginBottom: px(6),
+    }},
+      h('span', { style:{
+        fontFamily:A.mono, fontSize: px(9), letterSpacing: px(1.6),
+        color: A.muted, textTransform:'uppercase',
+        flexShrink:0, width: px(76),
+      }}, label),
+      h('span', { style:{
+        flex:1, borderBottom:`1px dotted ${A.muted}`, height: px(1),
+        opacity:0.5, transform: `translateY(-${px(3)}px)`,
+      }}),
+      h('span', { style:{
+        fontFamily: italic ? A.serif : A.mono,
+        fontSize: px(italic ? 16 : 10),
+        fontStyle: italic ? 'italic' : 'normal',
+        color: A.ink,
+        textAlign:'right',
+      }}, value),
+    );
+  }
+
+  // ─── UI: CertCarousel — horizontal scroll of all certificates
+  function CertCarousel({ onOpen }){
+    const [certs, setCerts] = React.useState(() => HairCerts.list());
+    React.useEffect(() => {
+      const refresh = () => setCerts(HairCerts.list());
+      window.addEventListener('cuttingroom:certs-changed', refresh);
+      return () => window.removeEventListener('cuttingroom:certs-changed', refresh);
+    }, []);
+
+    if (certs.length === 0) return null;
+
+    return h('div', { style:{ marginBottom: 24 } },
+      h('div', { style:{
+        padding:'0 20px',
+        display:'flex', justifyContent:'space-between', alignItems:'baseline',
+        fontFamily:A.mono, fontSize:9, letterSpacing:2, color:A.muted,
+        textTransform:'uppercase', marginBottom:10,
+      }},
+        h('span', null, '◇ Receipts · 我的帳單'),
+        h('span', null, certs.length, ' total'),
+      ),
+      h('div', {
+        style:{
+          display:'flex', gap:14,
+          overflowX:'auto', WebkitOverflowScrolling:'touch',
+          padding:'4px 20px 12px',
+          scrollSnapType:'x mandatory',
+        }
+      },
+        certs.map(c => h('button', {
+          key: c.id,
+          onClick: () => onOpen && onOpen(c),
+          style:{
+            flexShrink:0,
+            width: 220,
+            background: A.paper,
+            border:`1px solid ${A.ink}`,
+            padding:'18px 16px 14px',
+            cursor:'pointer',
+            textAlign:'left',
+            fontFamily:'inherit',
+            color: A.ink,
+            scrollSnapAlign:'start',
+            boxShadow: `4px 4px 0 ${A.ink}`,
+            transform: 'rotate(-0.5deg)',
+            transition: 'transform 0.2s ease',
+          },
+          onMouseEnter: e => e.currentTarget.style.transform = 'rotate(0deg) translateY(-2px)',
+          onMouseLeave: e => e.currentTarget.style.transform = 'rotate(-0.5deg)',
+        }, h(CertView, { cert: c, large: false })))
+      ),
+    );
+  }
+
+  // ─── UI: CertLightbox — full-screen view
+  function CertLightbox({ cert, onClose }){
+    if (!cert) return null;
+    return h('div', {
+      onClick: onClose,
+      style:{
+        position:'fixed', inset:0, zIndex:9998,
+        background:'rgba(15,14,13,0.88)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        padding:20, cursor:'pointer',
+      }
+    },
+      h('div', {
+        onClick: e => e.stopPropagation(),
+        style:{
+          width:'min(360px, 92vw)',
+          background: A.paper,
+          padding:'32px 28px 24px',
+          boxShadow:'0 30px 60px rgba(0,0,0,0.5)',
+          transform: 'rotate(-1deg)',
+          cursor:'default',
+        }
+      }, h(CertView, { cert, large: true })),
+      h('button', {
+        onClick: onClose,
+        style:{
+          position:'absolute', top:20, right:20,
+          width:40, height:40, padding:0,
+          background:A.paper, color:A.ink,
+          border:`1px solid ${A.ink}`, cursor:'pointer',
+          fontFamily:A.mono, fontSize:16, lineHeight:1,
+          borderRadius:0,
+        }
+      }, '×'),
+    );
+  }
+
+  // ─── Inject animation keyframes once
+  (function injectStyle(){
+    if (document.getElementById('luz-achievements-style')) return;
+    const s = document.createElement('style');
+    s.id = 'luz-achievements-style';
+    s.textContent = `
+      @keyframes luzStamp {
+        0% { transform: rotate(-12deg) scale(2.4); opacity:0; }
+        60% { transform: rotate(-12deg) scale(0.9); opacity:1; }
+        100% { transform: rotate(-12deg) scale(1); opacity:1; }
+      }
+    `;
+    document.head.appendChild(s);
+  })();
+
+  // ─── Export
+  window.HairTasks = HairTasks;
+  window.HairCerts = HairCerts;
+  window.AchievementUI = {
+    TaskBoard,
+    CertCarousel,
+    CertLightbox,
+    CertView,
   };
 })();
 
@@ -7578,27 +8378,7 @@ window.LUZ_LIBRARY = [
         fontSize: 18,
         color: window.HairFavs.isFav(result.name) ? A2.accent : A2.ink
       }
-    }, window.HairFavs.isFav(result.name) ? '✓' : '+')), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '14px 0'
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontFamily: A2.serif,
-        fontSize: 17,
-        fontStyle: 'italic',
-        color: A2.muted
-      }
-    }, "\u52A0\u5165\u6211\u7684\u5B78\u7FD2"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontFamily: A2.mono,
-        fontSize: 16,
-        color: A2.muted
-      }
-    }, "\u2192"))))), !result && !loading && /*#__PURE__*/React.createElement("div", {
+    }, window.HairFavs.isFav(result.name) ? '✓' : '+'))))), !result && !loading && /*#__PURE__*/React.createElement("div", {
       style: {
         padding: '32px 20px 0'
       }
